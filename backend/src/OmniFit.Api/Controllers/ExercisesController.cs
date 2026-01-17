@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using OmniFit.Application.DTOs;
 using OmniFit.Application.Interfaces;
 
@@ -9,10 +10,14 @@ namespace OmniFit.Api.Controllers
     public class ExercisesController : ControllerBase
     {
         private readonly IExerciseService _exerciseService;
+        private readonly IValidator<CreateExerciseRequest> _createRequestvalidator;
+        private readonly IValidator<UpdateExerciseRequest> _updateRequestvalidator;
 
-        public ExercisesController(IExerciseService exerciseService)
+        public ExercisesController(IExerciseService exerciseService, IValidator<CreateExerciseRequest> createRequestvalidator, IValidator<UpdateExerciseRequest> updateRequestvalidator)
         {
             _exerciseService = exerciseService;
+            _createRequestvalidator = createRequestvalidator;
+            _updateRequestvalidator = updateRequestvalidator;
         }
 
         [HttpGet]
@@ -39,6 +44,8 @@ namespace OmniFit.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateExerciseRequest request)
         {
+            await _createRequestvalidator.ValidateAndThrowAsync(request);
+
             var id = await _exerciseService.CreateAsync(request);
 
             return CreatedAtAction(nameof(GetById), new { id }, id);
@@ -47,6 +54,8 @@ namespace OmniFit.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateExerciseRequest request)
         {
+            await _updateRequestvalidator.ValidateAndThrowAsync(request);
+
             var updatedExercise = await _exerciseService.UpdateAsync(id, request);
 
             if (updatedExercise == null)

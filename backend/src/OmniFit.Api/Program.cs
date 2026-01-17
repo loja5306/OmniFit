@@ -1,6 +1,9 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using OmniFit.Api.Middleware;
 using OmniFit.Application.Interfaces;
 using OmniFit.Application.Services;
+using OmniFit.Application.Validators;
 using OmniFit.Domain.Interfaces;
 using OmniFit.Infrastructure.Data;
 using OmniFit.Infrastructure.Repositories;
@@ -19,6 +22,8 @@ builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 
 builder.Services.AddScoped<IExerciseService, ExerciseService>();
 builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
+
+builder.Services.AddValidatorsFromAssemblyContaining<CreateWorkoutRequestValidator>();
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
 
@@ -43,6 +48,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
 

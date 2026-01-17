@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using OmniFit.Application.DTOs;
 using OmniFit.Application.Interfaces;
 
@@ -9,10 +10,12 @@ namespace OmniFit.Api.Controllers
     public class WorkoutsController : ControllerBase
     {
         private readonly IWorkoutService _workoutService;
+        private readonly IValidator<CreateWorkoutRequest> _createRequestvalidator;
 
-        public WorkoutsController(IWorkoutService workoutService)
+        public WorkoutsController(IWorkoutService workoutService, IValidator<CreateWorkoutRequest> createRequestvalidator)
         {
             _workoutService = workoutService;
+            _createRequestvalidator = createRequestvalidator;
         }
 
         [HttpGet]
@@ -34,6 +37,9 @@ namespace OmniFit.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateWorkoutRequest request)
         {
+            throw new Exception();
+            await _createRequestvalidator.ValidateAndThrowAsync(request);
+
             var id = await _workoutService.CreateWorkoutAsync(request);
 
             return CreatedAtAction(nameof(GetById), new { id }, id);
