@@ -1,5 +1,6 @@
 ﻿using OmniFit.Application.DTOs;
 using OmniFit.Application.Interfaces;
+using OmniFit.Application.Mapping;
 using OmniFit.Domain.Entities;
 using OmniFit.Domain.Interfaces;
 
@@ -16,11 +17,7 @@ namespace OmniFit.Application.Services
 
         public async Task<Guid> CreateAsync(CreateExerciseRequest request)
         {
-            var exercise = new Exercise
-            {
-                Name = request.Name,
-                Description = request.Description
-            };
+            var exercise = request.MapToEntity();
 
             await _exerciseRepository.AddAsync(exercise);
             await _exerciseRepository.SaveChangesAsync();
@@ -44,10 +41,7 @@ namespace OmniFit.Application.Services
         {
             var exercises = await _exerciseRepository.GetAllAsync();
 
-            return exercises.Select(e => new ExerciseResponse(
-                e.Id, 
-                e.Name, 
-                e.Description));
+            return exercises.Select(e => e.MapToResponse());
         }
 
         public async Task<ExerciseResponse?> GetByIdAsync(Guid id)
@@ -56,10 +50,7 @@ namespace OmniFit.Application.Services
 
             if (exercise == null) return null;
 
-            return new ExerciseResponse(
-                exercise.Id,
-                exercise.Name,
-                exercise.Description);
+            return exercise.MapToResponse();
         }
 
         public async Task<ExerciseResponse?> UpdateAsync(Guid id, UpdateExerciseRequest request)
@@ -75,10 +66,7 @@ namespace OmniFit.Application.Services
 
             await _exerciseRepository.SaveChangesAsync();
 
-            return new ExerciseResponse(
-                exercise.Id,
-                exercise.Name,
-                exercise.Description);
+            return exercise.MapToResponse();
         }
     }
 }

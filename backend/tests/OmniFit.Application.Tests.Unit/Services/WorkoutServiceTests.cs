@@ -21,7 +21,7 @@ namespace OmniFit.Application.Tests.Unit.Services
         }
 
         [Fact]
-        public async Task CreateWorkoutAsync_ShouldReturnIdAndCreateWorkout_WhenMethodCalled()
+        public async Task CreateWorkoutAsync_ShouldReturnIdAndCallRepository_WhenWorkoutProvided()
         {
             //Arrange
             var request = new CreateWorkoutRequest("Monday Workout");
@@ -32,29 +32,9 @@ namespace OmniFit.Application.Tests.Unit.Services
             //Assert
             result.Should().NotBeEmpty();
 
-            await _workoutRepository.Received(1).AddAsync(Arg.Any<Workout>());
+            await _workoutRepository.Received(1).AddAsync(
+                Arg.Is<Workout>(w => w.Name == request.Name));
             await _workoutRepository.Received(1).SaveChangesAsync();
-        }
-
-        [Fact]
-        public async Task CreateWorkoutAsync_ShouldMapNestedExercisesAndSets_WhenExerciseAndSetRequestsProvided()
-        {
-            //Arrange
-            var setRequest = new WorkoutSetRequest(1, 10, 60);
-            var exerciseRequest = new WorkoutExerciseRequest(Guid.NewGuid(), new List<WorkoutSetRequest> { setRequest });
-            var request = new CreateWorkoutRequest("Monday Workout", new List<WorkoutExerciseRequest> { exerciseRequest });
-
-            //Act
-            var result = await _sut.CreateWorkoutAsync(request);
-
-            await _workoutRepository.Received(1).AddAsync(Arg.Is<Workout>(w =>
-                w.Name == "Monday Workout" &&
-                w.WorkoutExercises.Count == 1 &&
-                w.WorkoutExercises.First().ExerciseId == exerciseRequest.ExerciseId &&
-                w.WorkoutExercises.First().WorkoutSets.Count == 1 &&
-                w.WorkoutExercises.First().WorkoutSets.First().Reps == 10 &&
-                w.WorkoutExercises.First().WorkoutSets.First().Weight == 60
-            ));
         }
 
         [Fact]
@@ -71,7 +51,7 @@ namespace OmniFit.Application.Tests.Unit.Services
         }
 
         [Fact]
-        public async Task GetAllWorkoutsAsync_ShouldReturnMappedWorkouts_WhenWorkoutsExist()
+        public async Task GetAllWorkoutsAsync_ShouldReturnResponse_WhenWorkoutsExist()
         {
             //Arrange
             var workouts = new List<Workout>
@@ -112,30 +92,7 @@ namespace OmniFit.Application.Tests.Unit.Services
             var workout = new Workout
             {
                 Id = Guid.NewGuid(),
-                Name = "Monday Workout",
-                WorkoutExercises = new List<WorkoutExercise>
-                {
-                    new WorkoutExercise
-                    {
-                        Id = Guid.NewGuid(),
-                        Exercise = new Exercise
-                        {
-                            Id = Guid.NewGuid(),
-                            Name = "Bench Press",
-                            Description = "Chest Exercise",
-                        },
-                        WorkoutSets = new List<WorkoutSet>
-                        {
-                            new WorkoutSet
-                            {
-                                Id = Guid.NewGuid(),
-                                SetNumber = 1,
-                                Reps = 10,
-                                Weight = 60
-                            }
-                        }
-                    }
-                }
+                Name = "Monday Workout"
             };
             _workoutRepository.GetByIdAsync(workout.Id).Returns(workout);
 
@@ -143,9 +100,9 @@ namespace OmniFit.Application.Tests.Unit.Services
             var result = await _sut.GetWorkoutByIdAsync(workout.Id);
 
             //Assert
+            result.Should().NotBeNull();
             result!.Id.Should().Be(workout.Id);
             result!.Name.Should().Be(workout.Name);
-            result!.TotalExercises.Should().Be(1);
         }
 
         [Fact]

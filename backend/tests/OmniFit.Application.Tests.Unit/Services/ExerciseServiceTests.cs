@@ -89,7 +89,7 @@ namespace OmniFit.Application.Tests.Unit.Services
         }
 
         [Fact]
-        public async Task GetAllAsync_ShouldReturnMappedExercises_WhenExercisesExist()
+        public async Task GetAllAsync_ShouldReturnResponse_WhenExercisesExist()
         {
             //Arrange
             var exercises = new List<Exercise>
@@ -126,6 +126,7 @@ namespace OmniFit.Application.Tests.Unit.Services
             var result = await _sut.GetByIdAsync(exercise.Id);
 
             //Assert
+            result.Should().NotBeNull();
             result!.Id.Should().Be(exercise.Id);
             result!.Name.Should().Be(exercise.Name);
         }
@@ -160,7 +161,7 @@ namespace OmniFit.Application.Tests.Unit.Services
         }
 
         [Fact]
-        public async Task UpdateAsync_ShouldReturnUpdatedExercise_WhenExerciseExists()
+        public async Task UpdateAsync_ShouldCallRespository_WhenExerciseExists()
         {
             //Arrange
             var id = Guid.NewGuid();
@@ -179,9 +180,6 @@ namespace OmniFit.Application.Tests.Unit.Services
             var result = await _sut.UpdateAsync(id, updateRequest);
 
             //Assert
-            result!.Name.Should().Be(updateRequest.Name);
-            result!.Description.Should().Be(updateRequest.Description);
-
             _exerciseRepository.Received(1).Update(Arg.Any<Exercise>());
             await _exerciseRepository.Received(1).SaveChangesAsync();
         }

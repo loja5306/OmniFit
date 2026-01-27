@@ -49,19 +49,5 @@ namespace OmniFit.Application.Tests.Unit.Validators
             result.ShouldHaveValidationErrorFor(x => x.Exercises)
                 .WithErrorMessage("A workout must have at least 1 exercise");
         }
-
-        public void CreateWorkoutRequestValidator_ShouldThrowError_WhenExerciseHasNoSets()
-        {
-            //Arrange
-            var exerciseRequest = new WorkoutExerciseRequest(Guid.NewGuid());
-            var request = new CreateWorkoutRequest("Monday Workout", new List<WorkoutExerciseRequest> { exerciseRequest });
-
-            //Act
-            var result = _sut.TestValidate(request);
-
-            //Assert
-            result.ShouldHaveValidationErrorFor(x => x.Exercises!.First().Sets)
-                .WithErrorMessage("Each exercise must have at least 1 set");
-        }
     }
 }
