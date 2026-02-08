@@ -31,13 +31,17 @@ namespace OmniFit.Api.Controllers
         {
             var workout = await _workoutService.GetWorkoutByIdAsync(id);
 
+            if (workout == null)
+            {
+                return NotFound();
+            }
+
             return Ok(workout);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateWorkoutRequest request)
         {
-            throw new Exception();
             await _createRequestvalidator.ValidateAndThrowAsync(request);
 
             var id = await _workoutService.CreateWorkoutAsync(request);

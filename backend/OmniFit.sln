@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmniFit.Application.Tests.U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmniFit.Api.Tests.Unit", "tests\OmniFit.Api.Tests.Unit\OmniFit.Api.Tests.Unit.csproj", "{BE2CB778-9151-179E-71C4-A2C34BA5EE45}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmniFit.Api.Tests.Integration", "tests\OmniFit.Api.Tests.Integration\OmniFit.Api.Tests.Integration.csproj", "{67E3363E-CD21-E99A-4CFD-DA44A2AC348A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{BE2CB778-9151-179E-71C4-A2C34BA5EE45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE2CB778-9151-179E-71C4-A2C34BA5EE45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE2CB778-9151-179E-71C4-A2C34BA5EE45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67E3363E-CD21-E99A-4CFD-DA44A2AC348A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67E3363E-CD21-E99A-4CFD-DA44A2AC348A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67E3363E-CD21-E99A-4CFD-DA44A2AC348A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67E3363E-CD21-E99A-4CFD-DA44A2AC348A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

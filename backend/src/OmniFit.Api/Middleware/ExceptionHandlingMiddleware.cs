@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace OmniFit.Api.Middleware
 {
@@ -31,32 +32,33 @@ namespace OmniFit.Api.Middleware
                 return;
             }
                 
-            var problemDetails = new
+            var problemDetails = new ProblemDetails
             {
                 Status = StatusCodes.Status500InternalServerError,
                 Title = "Server Error",
                 Detail = "An unexpected error occured. Please try again."
             };
 
-            httpContext.Response.StatusCode = problemDetails.Status;
+            httpContext.Response.StatusCode = problemDetails.Status.Value;
 
             await httpContext.Response.WriteAsJsonAsync(problemDetails);
         }
 
         private async Task HandleValidationException(HttpContext httpContext, ValidationException exception)
         {
-            var problemDetails = new
+            var problemDetails = new ValidationProblemDetails
             {
                 Status = StatusCodes.Status400BadRequest,
                 Title = "Validation Error",
-                Errors = exception.Errors.Select(x => new
-                {
-                    PropertyName = x.PropertyName,
-                    Message = x.ErrorMessage
-                })
+                Errors = exception.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(
+                        g => g.Key, 
+                        g => g.ToList().Select(e => e.ErrorMessage).ToArray()
+                    )
             };
 
-            httpContext.Response.StatusCode = problemDetails.Status;
+            httpContext.Response.StatusCode = problemDetails.Status.Value;
             await httpContext.Response.WriteAsJsonAsync(problemDetails);
         }
     }
