@@ -30,7 +30,6 @@ namespace OmniFit.Api.Tests.Integration
                 .WithUsername("postgres")
                 .WithPassword("7Er2zgu526lCAN9")
                 .WithDatabase("omnifit")
-                .WithResourceMapping(new FileInfo(config["InitSqlFilePath"]!), "/docker-entrypoint-initdb.d/")
                 .Build();
         }
 

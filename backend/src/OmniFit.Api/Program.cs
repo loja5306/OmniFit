@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using OmniFit.Api.Extensions;
 using OmniFit.Api.Middleware;
 using OmniFit.Application.Interfaces;
 using OmniFit.Application.Services;
@@ -43,6 +44,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    await app.ApplyMigrationsAsync();
 }
 
 if (!builder.Environment.IsDevelopment()) 
