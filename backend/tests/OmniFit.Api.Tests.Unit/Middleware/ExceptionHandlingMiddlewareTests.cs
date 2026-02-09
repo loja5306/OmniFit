@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using OmniFit.Api.Middleware;
+using System.Security.Authentication;
 
 namespace OmniFit.Api.Tests.Unit.Middleware
 {
@@ -36,6 +37,20 @@ namespace OmniFit.Api.Tests.Unit.Middleware
 
             //Assert
             _httpContext.Response.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        }
+
+        [Fact]
+        public async Task InvokeAsync_ShouldReturn401_WhenAuthenticationExceptionThrown()
+        {
+            // Arrange
+            RequestDelegate next = (ctx) => throw new AuthenticationException("The email and/or password was incorrect");
+            var sut = new ExceptionHandlingMiddleware(next);
+
+            // Act
+            await sut.InvokeAsync(_httpContext);
+
+            //Assert
+            _httpContext.Response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
         }
     }
 }

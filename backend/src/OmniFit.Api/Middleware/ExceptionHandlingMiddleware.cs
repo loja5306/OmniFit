@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Authentication;
 
 namespace OmniFit.Api.Middleware
 {
@@ -31,6 +32,12 @@ namespace OmniFit.Api.Middleware
                 await HandleValidationException(httpContext, (ValidationException)exception);
                 return;
             }
+
+            if (exception is AuthenticationException)
+            {
+                await HandleAuthenicationException(httpContext, (AuthenticationException)exception);
+                return;
+            }
                 
             var problemDetails = new ProblemDetails
             {
@@ -56,6 +63,19 @@ namespace OmniFit.Api.Middleware
                         g => g.Key, 
                         g => g.ToList().Select(e => e.ErrorMessage).ToArray()
                     )
+            };
+
+            httpContext.Response.StatusCode = problemDetails.Status.Value;
+            await httpContext.Response.WriteAsJsonAsync(problemDetails);
+        }
+
+        private async Task HandleAuthenicationException(HttpContext httpContext, AuthenticationException exception)
+        {
+            var problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status401Unauthorized,
+                Title = "Unauthorized",
+                Detail = exception.Message
             };
 
             httpContext.Response.StatusCode = problemDetails.Status.Value;

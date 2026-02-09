@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OmniFit.Api.Extensions;
 using OmniFit.Api.Middleware;
@@ -8,12 +9,18 @@ using OmniFit.Application.Validators;
 using OmniFit.Domain.Interfaces;
 using OmniFit.Infrastructure.Data;
 using OmniFit.Infrastructure.Repositories;
+using OmniFit.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddIdentityCore<IdentityUser>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+}).AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -23,6 +30,9 @@ builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 
 builder.Services.AddScoped<IExerciseService, ExerciseService>();
 builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateWorkoutRequestValidator>();
 
