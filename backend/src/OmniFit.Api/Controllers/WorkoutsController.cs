@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OmniFit.Application.DTOs;
 using OmniFit.Application.Interfaces;
@@ -18,6 +19,7 @@ namespace OmniFit.Api.Controllers
             _createRequestvalidator = createRequestvalidator;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -26,6 +28,7 @@ namespace OmniFit.Api.Controllers
             return Ok(workouts);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
@@ -39,6 +42,7 @@ namespace OmniFit.Api.Controllers
             return Ok(workout);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateWorkoutRequest request)
         {

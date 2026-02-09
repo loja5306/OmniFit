@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using Npgsql;
 using OmniFit.Infrastructure.Data;
 using Respawn;
 using System.Data.Common;
+using System.Net.Http.Headers;
 using Testcontainers.PostgreSql;
 
 namespace OmniFit.Api.Tests.Integration
@@ -21,11 +23,6 @@ namespace OmniFit.Api.Tests.Integration
 
         public ApiFactory()
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.Test.json", optional: false)
-                .Build();
-
             _dbContainer = new PostgreSqlBuilder("postgres:16-alpine")
                 .WithUsername("postgres")
                 .WithPassword("7Er2zgu526lCAN9")
@@ -45,6 +42,7 @@ namespace OmniFit.Api.Tests.Integration
             await _dbContainer.StartAsync();
             _dbConnection = new NpgsqlConnection(_dbContainer.GetConnectionString());
             HttpClient = CreateClient();
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Guid.NewGuid().ToString());
             await InitializeRespawner();
         }
 
@@ -65,6 +63,14 @@ namespace OmniFit.Api.Tests.Integration
                 services.RemoveAll(typeof(AppDbContext));
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseNpgsql(_dbConnection));
+
+                services.RemoveAll(typeof(AuthenticationOptions));
+                services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = TestAuthHandler.AuthenticationScheme;
+                    options.DefaultChallengeScheme = TestAuthHandler.AuthenticationScheme;
+                })
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
             });
         }
 
