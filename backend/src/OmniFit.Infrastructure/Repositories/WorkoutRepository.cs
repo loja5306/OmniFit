@@ -29,6 +29,17 @@ namespace OmniFit.Infrastructure.Repositories
                 .OrderByDescending(w => w.CreatedOn)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Workout>> GetByUserIdAsync(string userId)
+        {
+            return await _context.Workouts
+                .Include(w => w.WorkoutExercises)
+                    .ThenInclude(we => we.Exercise)
+                .Include(w => w.WorkoutExercises)
+                    .ThenInclude(we => we.WorkoutSets)
+                .Where(w => w.UserId == userId)
+                .OrderByDescending(w => w.CreatedOn)
+                .ToListAsync();
+        }
 
         public async Task<Workout?> GetByIdAsync(Guid id)
         {

@@ -27,7 +27,7 @@ namespace OmniFit.Application.Tests.Unit.Services
             var request = new CreateWorkoutRequest("Monday Workout");
 
             //Act
-            var result = await _sut.CreateWorkoutAsync(request);
+            var result = await _sut.CreateWorkoutAsync(request, Guid.NewGuid().ToString());
 
             //Assert
             result.Should().NotBeEmpty();
@@ -117,6 +117,52 @@ namespace OmniFit.Application.Tests.Unit.Services
 
             //Assert
             result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetWorkoutsByUserIdAsync_ShouldReturnResponse_WhenWorkoutsExistForUser()
+        {
+            //Arrange
+            var userId = Guid.NewGuid().ToString();
+            var workouts = new List<Workout>
+            {
+                new Workout
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Monday Workout",
+                    UserId = userId
+                    
+                },
+                new Workout
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Tuesday Workout",
+                    UserId = userId
+                },
+            };
+            _workoutRepository.GetByUserIdAsync(userId).Returns(workouts);
+
+            //Act
+            var result = await _sut.GetWorkoutsByUserIdAsync(userId);
+
+            //Assert
+            result.Should().HaveCount(2);
+            result.Should().Contain(w => w.Name == "Monday Workout");
+            result.Should().Contain(w => w.Name == "Tuesday Workout");
+        }
+
+        [Fact]
+        public async Task GetAllWorkoutsAsync_ShouldReturnEmptyList_WhenNoWorkoutsExistForUser()
+        {
+            //Arrange
+            var userId = Guid.NewGuid().ToString();
+            _workoutRepository.GetByUserIdAsync(userId).Returns(new List<Workout>());
+
+            //Act
+            var result = await _sut.GetWorkoutsByUserIdAsync(userId);
+
+            //Assert
+            result.Should().BeEmpty();
         }
     }
 }

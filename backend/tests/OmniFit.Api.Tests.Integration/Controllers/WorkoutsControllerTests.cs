@@ -1,6 +1,10 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using OmniFit.Application.DTOs;
+using OmniFit.Domain.Entities;
+using OmniFit.Infrastructure.Data;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -21,21 +25,16 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Create_CreatesWorkout_WhenWorkoutIsValid()
         {
             //Arrange
-            Guid benchPressId = await SeedExerciseAsync(
-                new CreateExerciseRequest("Bench Press", "Chest Exercise"));
-            Guid squatId = await SeedExerciseAsync(
-                new CreateExerciseRequest("Squat", "Quad Exercise"));
-
             var workout = new CreateWorkoutRequest("Monday Workout",
                 new List<WorkoutExerciseRequest>
                 {
-                    new WorkoutExerciseRequest(squatId, new List<WorkoutSetRequest>
+                    new WorkoutExerciseRequest(TestData.Exercises.BenchPressExercise.Id, new List<WorkoutSetRequest>
                     {
                         new WorkoutSetRequest(1, 5, 80),
                         new WorkoutSetRequest(2, 6, 70),
                         new WorkoutSetRequest(3, 5, 70),
                     }),
-                    new WorkoutExerciseRequest(benchPressId, new List<WorkoutSetRequest>
+                    new WorkoutExerciseRequest(TestData.Exercises.SquatExercise.Id, new List<WorkoutSetRequest>
                     {
                         new WorkoutSetRequest(1, 5, 80),
                         new WorkoutSetRequest(2, 5, 75),
@@ -60,21 +59,16 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Create_ReturnsValidationError_WhenWorkoutIsInvalid()
         {
             //Arrange
-            Guid benchPressId = await SeedExerciseAsync(
-                new CreateExerciseRequest("Bench Press", "Chest Exercise"));
-            Guid squatId = await SeedExerciseAsync(
-                new CreateExerciseRequest("Squat", "Quad Exercise"));
-
             var workout = new CreateWorkoutRequest(string.Empty,
                 new List<WorkoutExerciseRequest>
                 {
-                    new WorkoutExerciseRequest(squatId, new List<WorkoutSetRequest>
+                    new WorkoutExerciseRequest(TestData.Exercises.SquatExercise.Id, new List<WorkoutSetRequest>
                     {
                         new WorkoutSetRequest(1, 5, -80),
                         new WorkoutSetRequest(2, -6, 70),
                         new WorkoutSetRequest(3, 5, 70),
                     }),
-                    new WorkoutExerciseRequest(benchPressId, new List<WorkoutSetRequest>())
+                    new WorkoutExerciseRequest(TestData.Exercises.BenchPressExercise.Id, new List<WorkoutSetRequest>())
                 });
 
             //Act
@@ -104,21 +98,16 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task GetById_ReturnsWorkout_WhenWorkoutExists()
         {
             //Arrange
-            Guid benchPressId = await SeedExerciseAsync(
-                new CreateExerciseRequest("Bench Press", "Chest Exercise"));
-            Guid squatId = await SeedExerciseAsync(
-                new CreateExerciseRequest("Squat", "Quad Exercise"));
-
             var workout = new CreateWorkoutRequest("Monday Workout",
                 new List<WorkoutExerciseRequest>
                 {
-                    new WorkoutExerciseRequest(squatId, new List<WorkoutSetRequest>
+                    new WorkoutExerciseRequest(TestData.Exercises.SquatExercise.Id, new List<WorkoutSetRequest>
                     {
                         new WorkoutSetRequest(1, 5, 80),
                         new WorkoutSetRequest(2, 6, 70),
                         new WorkoutSetRequest(3, 5, 70),
                     }),
-                    new WorkoutExerciseRequest(benchPressId, new List<WorkoutSetRequest>
+                    new WorkoutExerciseRequest(TestData.Exercises.BenchPressExercise.Id, new List<WorkoutSetRequest>
                     {
                         new WorkoutSetRequest(1, 5, 80),
                         new WorkoutSetRequest(2, 5, 75),
@@ -171,21 +160,16 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task GetAll_ReturnsAllWorkouts_WhenWorkoutsExist()
         {
             //Arrange
-            Guid benchPressId = await SeedExerciseAsync(
-                new CreateExerciseRequest("Bench Press", "Chest Exercise"));
-            Guid squatId = await SeedExerciseAsync(
-                new CreateExerciseRequest("Squat", "Quad Exercise"));
-
             var workout1 = new CreateWorkoutRequest("Monday Workout",
                 new List<WorkoutExerciseRequest>
                 {
-                    new WorkoutExerciseRequest(squatId, new List<WorkoutSetRequest>
+                    new WorkoutExerciseRequest(TestData.Exercises.SquatExercise.Id, new List<WorkoutSetRequest>
                     {
                         new WorkoutSetRequest(1, 5, 80),
                         new WorkoutSetRequest(2, 6, 70),
                         new WorkoutSetRequest(3, 5, 70),
                     }),
-                    new WorkoutExerciseRequest(benchPressId, new List<WorkoutSetRequest>
+                    new WorkoutExerciseRequest(TestData.Exercises.BenchPressExercise.Id, new List<WorkoutSetRequest>
                     {
                         new WorkoutSetRequest(1, 5, 80),
                         new WorkoutSetRequest(2, 5, 75),
@@ -195,13 +179,13 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var workout2 = new CreateWorkoutRequest("Wednesday Workout",
                 new List<WorkoutExerciseRequest>
                 {
-                    new WorkoutExerciseRequest(squatId, new List<WorkoutSetRequest>
+                    new WorkoutExerciseRequest(TestData.Exercises.SquatExercise.Id, new List<WorkoutSetRequest>
                     {
                         new WorkoutSetRequest(1, 6, 80),
                         new WorkoutSetRequest(2, 7, 70),
                         new WorkoutSetRequest(3, 5, 70),
                     }),
-                    new WorkoutExerciseRequest(benchPressId, new List<WorkoutSetRequest>
+                    new WorkoutExerciseRequest(TestData.Exercises.BenchPressExercise.Id, new List<WorkoutSetRequest>
                     {
                         new WorkoutSetRequest(1, 6, 80),
                         new WorkoutSetRequest(2, 5, 75),
@@ -224,7 +208,13 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             content.Should().Contain(e => e.Id == id1);
             content.Should().Contain(e => e.Id == id2);
         }
-        public Task InitializeAsync() => Task.CompletedTask;
+        public async Task InitializeAsync()
+        {
+            await SeedExerciseAsync(TestData.Exercises.BenchPressExercise);
+            await SeedExerciseAsync(TestData.Exercises.SquatExercise);
+
+            await SeedUserAsync(TestData.Users.User);
+        }
 
         public async Task DisposeAsync()
         {
@@ -233,10 +223,24 @@ namespace OmniFit.Api.Tests.Integration.Controllers
 
         #region Seeding Data
 
-        private async Task<Guid> SeedExerciseAsync(CreateExerciseRequest request)
+        private async Task SeedExerciseAsync(Exercise exercise)
         {
-            var response = await _httpClient.PostAsJsonAsync("/Exercises", request);
-            return await response.Content.ReadFromJsonAsync<Guid>();
+            using var scope = _factory.Services.CreateScope();
+
+            var _dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            _dbContext.Exercises.Add(exercise);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        private async Task SeedUserAsync(IdentityUser user)
+        {
+            using var scope = _factory.Services.CreateScope();
+
+            var _dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            _dbContext.Users.Add(user);
+            await _dbContext.SaveChangesAsync();
         }
 
         #endregion

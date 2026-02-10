@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.JsonWebTokens;
 using NSubstitute;
 using OmniFit.Application.DTOs;
 using OmniFit.Application.Interfaces;
@@ -35,6 +34,7 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
             var request = new LoginRequestDto("lukeatkinson@gmail.com", "Password123!");
             var identityUser = new IdentityUser
             {
+                Id = Guid.NewGuid().ToString(),
                 UserName = request.Email,
                 Email = request.Email,
             };
@@ -42,7 +42,7 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
 
             _userManager.FindByEmailAsync(request.Email).Returns(identityUser);
             _userManager.CheckPasswordAsync(identityUser, request.Password).Returns(true);
-            _tokenService.CreateToken(request.Email).Returns(token);
+            _tokenService.CreateToken(request.Email, identityUser.Id).Returns(token);
 
             //Act
             var result = await _sut.LoginUserAsync(request);
@@ -94,16 +94,11 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
         {
             //Arrange
             var request = new RegisterRequestDto("lukeatkinson@gmail.com", "Password123!");
-            var identityUser = new IdentityUser
-            {
-                UserName = request.Email,
-                Email = request.Email,
-            };
             var token = Guid.NewGuid().ToString();
 
             _userManager.CreateAsync(Arg.Any<IdentityUser>(), request.Password)
                 .Returns(IdentityResult.Success);
-            _tokenService.CreateToken(request.Email).Returns(token);
+            _tokenService.CreateToken(request.Email, Arg.Any<string>()).Returns(token);
 
             //Act
             var result = await _sut.RegisterUserAsync(request);

@@ -5,11 +5,12 @@ namespace OmniFit.Application.Mapping
 {
     public static class WorkoutMappingExtensions
     {
-        public static Workout MapToEntity(this CreateWorkoutRequest request)
+        public static Workout MapToEntity(this CreateWorkoutRequest request, string userId)
         {
             return new Workout
             {
                 Name = request.Name,
+                UserId = userId,
                 WorkoutExercises = request.Exercises?.Select(e => new WorkoutExercise
                 {
                     ExerciseId = e.ExerciseId,

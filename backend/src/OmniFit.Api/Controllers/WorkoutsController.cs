@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OmniFit.Application.DTOs;
 using OmniFit.Application.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace OmniFit.Api.Controllers
 {
@@ -29,6 +30,19 @@ namespace OmniFit.Api.Controllers
         }
 
         [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetForUser()
+        {
+            var userId = User.FindFirst(JwtRegisteredClaimNames.NameId)?.Value;
+
+            if (userId == null) return Unauthorized();
+
+            var workouts = await _workoutService.GetWorkoutsByUserIdAsync(userId);
+
+            return Ok(workouts);
+        }
+
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
@@ -46,9 +60,13 @@ namespace OmniFit.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateWorkoutRequest request)
         {
+            var userId = User.FindFirst(JwtRegisteredClaimNames.NameId)?.Value;
+
+            if (userId == null) return Unauthorized();
+
             await _createRequestvalidator.ValidateAndThrowAsync(request);
 
-            var id = await _workoutService.CreateWorkoutAsync(request);
+            var id = await _workoutService.CreateWorkoutAsync(request, userId);
 
             return CreatedAtAction(nameof(GetById), new { id }, id);
         }

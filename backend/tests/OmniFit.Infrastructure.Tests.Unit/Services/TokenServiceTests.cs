@@ -28,14 +28,16 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
         {
             //Arrange
             var email = "lukeatkinson@gmail.com";
+            var userId = Guid.NewGuid().ToString();
 
             //Act
-            var token = _sut.CreateToken(email);
+            var token = _sut.CreateToken(email, userId);
 
             //Assert
             var handler = new JsonWebTokenHandler();
             var jwtToken = handler.ReadJsonWebToken(token);
 
+            jwtToken.GetClaim(JwtRegisteredClaimNames.NameId).Value.Should().Be(userId);
             jwtToken.GetClaim(JwtRegisteredClaimNames.Sub).Value.Should().Be(email);
             jwtToken.GetClaim(JwtRegisteredClaimNames.Email).Value.Should().Be(email);
             jwtToken.Issuer.Should().Be(_config["Jwt:Issuer"]);

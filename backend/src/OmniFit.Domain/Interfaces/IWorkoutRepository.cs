@@ -7,6 +7,7 @@ namespace OmniFit.Domain.Interfaces
         Task AddAsync(Workout workout);
         Task<Workout?> GetByIdAsync(Guid id);
         Task<IEnumerable<Workout>> GetAllAsync();
+        Task<IEnumerable<Workout>> GetByUserIdAsync(string userId);
         Task SaveChangesAsync();
     }
 }

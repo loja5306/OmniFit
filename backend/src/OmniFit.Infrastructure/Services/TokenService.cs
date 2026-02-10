@@ -16,13 +16,14 @@ namespace OmniFit.Infrastructure.Services
             _config = config;
         }
 
-        public string CreateToken(string email)
+        public string CreateToken(string email, string userId)
         {
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
             {
+                new Claim(JwtRegisteredClaimNames.NameId, userId),
                 new Claim(JwtRegisteredClaimNames.Sub, email),
                 new Claim(JwtRegisteredClaimNames.Email, email),
             };
