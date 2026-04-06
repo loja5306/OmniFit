@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OmniFit.Api.Extensions;
+using OmniFit.Api.HealthChecks;
 using OmniFit.Api.Middleware;
 using OmniFit.Application.Interfaces;
 using OmniFit.Application.Services;
@@ -52,6 +53,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -72,6 +76,8 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
+
+app.MapHealthChecks("health");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
