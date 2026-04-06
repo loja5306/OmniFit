@@ -7,10 +7,12 @@ namespace OmniFit.Api.Middleware
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next)
+        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -38,6 +40,9 @@ namespace OmniFit.Api.Middleware
                 await HandleAuthenicationException(httpContext, (AuthenticationException)exception);
                 return;
             }
+
+            _logger.LogError(exception, "Unhandled exception for {Method} {Path}", 
+                httpContext.Request.Method, httpContext.Request.Path);
                 
             var problemDetails = new ProblemDetails
             {
@@ -53,6 +58,9 @@ namespace OmniFit.Api.Middleware
 
         private async Task HandleValidationException(HttpContext httpContext, ValidationException exception)
         {
+            _logger.LogWarning("Validation error for {Method} {Path}", 
+                httpContext.Request.Method, httpContext.Request.Path);
+
             var problemDetails = new ValidationProblemDetails
             {
                 Status = StatusCodes.Status400BadRequest,
@@ -71,6 +79,9 @@ namespace OmniFit.Api.Middleware
 
         private async Task HandleAuthenicationException(HttpContext httpContext, AuthenticationException exception)
         {
+            _logger.LogWarning("Authentication error for {Method} {Path}", 
+                httpContext.Request.Method, httpContext.Request.Path);
+
             var problemDetails = new ProblemDetails
             {
                 Status = StatusCodes.Status401Unauthorized,
