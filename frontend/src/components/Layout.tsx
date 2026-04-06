@@ -1,21 +1,11 @@
-import { Link, Outlet } from "react-router";
+import { Outlet } from "react-router";
+import NavBar from "./NavBar";
 
 const Layout = () => {
+
   return (
     <div className="min-h-screen bg-slate-100">
-      <nav className="w-full flex justify-between items-center p-4 bg-blue-400 text-white">
-        <Link to="/" className="text-2xl font-bold">
-          OmniFit
-        </Link>
-        <div className="space-x-4">
-          <Link to="/workouts" className="">
-            Workouts
-          </Link>
-          <Link to="/exercises" className="">
-            Exercises
-          </Link>
-        </div>
-      </nav>
+      <NavBar />
       <main>
         <Outlet />
       </main>
