@@ -7,7 +7,7 @@ import Workouts from "./pages/Workouts";
 import Exercises from "./pages/Exercises";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Layout from "./components/Layout";
+import Layout from "./components/common/Layout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./contexts/AuthContext";
 

@@ -1,4 +1,4 @@
-import ExerciseGrid from "../components/ExerciseGrid";
+import ExerciseGrid from "../components/exercises/ExerciseGrid";
 
 const Exercises = () => {
   return (

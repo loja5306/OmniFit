@@ -15,7 +15,7 @@ function parseEmailFromToken(token: string): string | null {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem(TOKEN_KEY)
+    localStorage.getItem(TOKEN_KEY),
   );
 
   const email = token ? parseEmailFromToken(token) : null;
@@ -32,7 +32,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ token, email, isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{ token, email, isAuthenticated, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

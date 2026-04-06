@@ -1,8 +1,9 @@
 import { Plus } from "lucide-react";
-import { useGetAllExercises } from "../hooks/useGetAllExercises";
-import type { Exercise } from "../types/exerciseTypes";
-import AddExerciseModal from "./AddExerciseModal";
+import { useGetAllExercises } from "../../hooks/useGetAllExercises";
+import type { Exercise } from "../../types/exerciseTypes";
+import AddExerciseModal from "./CreateExerciseModal";
 import { useState } from "react";
+import ExerciseCard from "./ExerciseCard";
 
 const ExerciseGrid = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -27,12 +28,7 @@ const ExerciseGrid = () => {
       </div>
       <ul className="grid grid-cols-3 gap-4 pt-2">
         {data.map((exercise: Exercise) => (
-          <li key={exercise.id} className="bg-white p-4 rounded-lg shadow-lg">
-            <h2 className="text-center font-bold text-xl pb-2">
-              {exercise.name}
-            </h2>
-            <p className="text-center">{exercise.description}</p>
-          </li>
+          <ExerciseCard key={exercise.id} exercise={exercise} />
         ))}
       </ul>
     </div>

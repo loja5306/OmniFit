@@ -1,15 +1,18 @@
 import { useState, type FormEvent } from "react";
-import type { AddExerciseModalProps } from "../types/propTypes";
-import { useCreateExercise } from "../hooks/useCreateExercise";
+import { useCreateExercise } from "../../hooks/useCreateExercise";
 import { Plus, X } from "lucide-react";
+import Modal from "../common/Modal";
 
-const AddExerciseModal = ({ isOpen, onClose }: AddExerciseModalProps) => {
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const CreateExerciseModal = ({ isOpen, onClose }: Props) => {
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
   const createExercise = useCreateExercise();
-
-  if (!isOpen) return null;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -24,9 +27,8 @@ const AddExerciseModal = ({ isOpen, onClose }: AddExerciseModalProps) => {
   };
 
   return (
-    <div className="bg-black/50 fixed inset-0 flex justify-center items-center">
-      <form className="bg-slate-100 p-4 space-y-4" onSubmit={handleSubmit}>
-        <h2 className="text-center text-xl font-bold">Create Exercise</h2>
+    <Modal isOpen={isOpen} title="Create Exercise" onClose={onClose}>
+      <form className="p-4 space-y-4" onSubmit={handleSubmit}>
         <div className="flex justify-between gap-2">
           <label>Name</label>
           <input
@@ -62,8 +64,8 @@ const AddExerciseModal = ({ isOpen, onClose }: AddExerciseModalProps) => {
           </button>
         </div>
       </form>
-    </div>
+    </Modal>
   );
 };
 
-export default AddExerciseModal;
+export default CreateExerciseModal;
