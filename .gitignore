@@ -14,6 +14,7 @@ dist-ssr
 
 # Editor directories and files
 .vscode/*
+.vscode/
 !.vscode/extensions.json
 .idea
 .DS_Store
@@ -36,3 +37,15 @@ e2e/playwright-report/
 e2e/blob-report/
 e2e/playwright/.cache/
 e2e/playwright/.auth/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+.terraform.tfstate.lock.info
+.terraformrc
+terraform.rc
+
+.ssh
