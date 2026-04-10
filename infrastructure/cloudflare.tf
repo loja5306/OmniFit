@@ -21,3 +21,18 @@ resource "cloudflare_dns_record" "main" {
   proxied = false
   ttl = 1
 }
+
+resource "cloudflare_zone_setting" "ssl" {
+  zone_id = data.cloudflare_zone.main.zone_id
+  setting_id = "ssl"
+  value = "flexible"
+}
+
+resource "cloudflare_dns_record" "backend" {
+  zone_id = data.cloudflare_zone.main.zone_id
+  name = "api-omnifit"
+  type = "A"
+  content = aws_eip.main.public_ip
+  proxied = true
+  ttl = 1
+}

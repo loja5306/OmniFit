@@ -17,3 +17,18 @@ variable "frontend_domain" {
   type = string
   default = "omnifit.lukeatkinson.dev"
 }
+
+variable "db_user" {
+  type      = string
+  sensitive = true
+}
+
+variable "db_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "jwt_key" {
+  type      = string
+  sensitive = true
+}
