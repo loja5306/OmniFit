@@ -23,9 +23,8 @@ namespace OmniFit.Infrastructure.Services
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.NameId, userId),
-                new Claim(JwtRegisteredClaimNames.Sub, email),
-                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Email, email),
             };
 
             var tokenHandler = new JsonWebTokenHandler();

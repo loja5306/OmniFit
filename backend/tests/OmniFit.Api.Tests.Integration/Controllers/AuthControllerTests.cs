@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using OmniFit.Application.DTOs;
 using System.Net;
 using System.Net.Http.Json;
+using System.Security.Claims;
 
 namespace OmniFit.Api.Tests.Integration.Controllers
 {
@@ -39,8 +40,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var handler = new JsonWebTokenHandler();
             var jwtToken = handler.ReadJsonWebToken(content.Token);
 
-            jwtToken.GetClaim(JwtRegisteredClaimNames.Email).Value.Should().Be(request.Email);
-            jwtToken.GetClaim(JwtRegisteredClaimNames.Sub).Value.Should().Be(request.Email);
+            jwtToken.GetClaim(ClaimTypes.Email).Value.Should().Be(request.Email);
         }
 
         [Fact]
@@ -82,8 +82,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var handler = new JsonWebTokenHandler();
             var jwtToken = handler.ReadJsonWebToken(content.Token);
 
-            jwtToken.GetClaim(JwtRegisteredClaimNames.Email).Value.Should().Be(request.Email);
-            jwtToken.GetClaim(JwtRegisteredClaimNames.Sub).Value.Should().Be(request.Email);
+            jwtToken.GetClaim(ClaimTypes.Email).Value.Should().Be(request.Email);
         }
 
         [Fact]

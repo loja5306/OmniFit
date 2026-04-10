@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Security.Claims;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using OmniFit.Infrastructure.Services;
@@ -37,9 +38,8 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
             var handler = new JsonWebTokenHandler();
             var jwtToken = handler.ReadJsonWebToken(token);
 
-            jwtToken.GetClaim(JwtRegisteredClaimNames.NameId).Value.Should().Be(userId);
-            jwtToken.GetClaim(JwtRegisteredClaimNames.Sub).Value.Should().Be(email);
-            jwtToken.GetClaim(JwtRegisteredClaimNames.Email).Value.Should().Be(email);
+            jwtToken.GetClaim(ClaimTypes.NameIdentifier).Value.Should().Be(userId);
+            jwtToken.GetClaim(ClaimTypes.Email).Value.Should().Be(email);
             jwtToken.Issuer.Should().Be(_config["Jwt:Issuer"]);
             jwtToken.Audiences.Should().Contain(_config["Jwt:Audience"]);
             jwtToken.ValidTo.Should().BeAfter(DateTime.UtcNow.AddDays(6));
