@@ -1,0 +1,61 @@
+name: Backend CICD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend/**
+
+jobs:
+  backend-ci:
+    name: Backend CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.x"
+
+      - run: dotnet restore
+
+      - run: dotnet build --no-restore
+
+      - run: dotnet test --no-restore --no-build
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - run: docker build -t ${{ secrets.ECR_REGISTRY }}/omnifit-backend:latest .
+      - run: docker push ${{ secrets.ECR_REGISTRY }}/omnifit-backend:latest
+
+  backend-cd:
+    name: Backend CD
+    needs: backend-ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - run: aws ssm send-command \
+          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+          --document-name "AWS-RunShellScript" \
+          --parameters 'commands=[
+          "aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}",
+          "docker pull ${{ secrets.ECR_REGISTRY }}/omnifit-backend:latest",
+          "cd /opt/omnifit && docker compose up -d --no-deps backend"
+          ]'
