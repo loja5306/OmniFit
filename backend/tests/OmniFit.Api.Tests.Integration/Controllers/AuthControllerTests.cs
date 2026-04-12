@@ -40,7 +40,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var handler = new JsonWebTokenHandler();
             var jwtToken = handler.ReadJsonWebToken(content.Token);
 
-            jwtToken.GetClaim(ClaimTypes.Email).Value.Should().Be(request.Email);
+            jwtToken.GetClaim(JwtRegisteredClaimNames.Email).Value.Should().Be(request.Email);
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var handler = new JsonWebTokenHandler();
             var jwtToken = handler.ReadJsonWebToken(content.Token);
 
-            jwtToken.GetClaim(ClaimTypes.Email).Value.Should().Be(request.Email);
+            jwtToken.GetClaim(JwtRegisteredClaimNames.Email).Value.Should().Be(request.Email);
         }
 
         [Fact]
