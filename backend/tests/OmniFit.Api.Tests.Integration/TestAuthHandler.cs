@@ -24,8 +24,8 @@ namespace OmniFit.Api.Tests.Integration
             }
 
             var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, TestData.Users.User.Id),
-                new Claim(ClaimTypes.Email, TestData.Users.User.Email!),
+                new Claim(JwtRegisteredClaimNames.NameId, TestData.Users.User.Id),
+                new Claim(JwtRegisteredClaimNames.Email, TestData.Users.User.Email!),
             };
 
             var identity = new ClaimsIdentity(claims, AuthenticationScheme);

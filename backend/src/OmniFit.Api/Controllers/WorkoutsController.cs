@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OmniFit.Application.DTOs;
 using OmniFit.Application.Interfaces;
-using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace OmniFit.Api.Controllers
 {
@@ -33,7 +33,7 @@ namespace OmniFit.Api.Controllers
         [HttpGet("me")]
         public async Task<IActionResult> GetForUser()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst(JwtRegisteredClaimNames.NameId)?.Value;
 
             if (userId == null) return Unauthorized();
 
@@ -60,7 +60,7 @@ namespace OmniFit.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateWorkoutRequest request)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst(JwtRegisteredClaimNames.NameId)?.Value;
 
             if (userId == null) return Unauthorized();
 
