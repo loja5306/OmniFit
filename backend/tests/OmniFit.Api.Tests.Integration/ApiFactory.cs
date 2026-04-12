@@ -21,6 +21,10 @@ namespace OmniFit.Api.Tests.Integration
         private DbConnection _dbConnection = default!;
         private Respawner _respawner = default!;
 
+        private const string JwtTestKey = "Bd7rL1unRzLMP02R8vKrxmh30G2LBiHMm8pJNA1rJR5";
+        private const string JwtIssuer = "omnifit_api";
+        private const string JwtAudience = "omnifit_web";
+
         public ApiFactory()
         {
             _dbContainer = new PostgreSqlBuilder("postgres:16-alpine")
@@ -58,9 +62,19 @@ namespace OmniFit.Api.Tests.Integration
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            builder.ConfigureAppConfiguration((config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Jwt:Key"] = JwtTestKey,
+                    ["Jwt:Issuer"] = JwtIssuer,
+                    ["Jwt:Audience"] = JwtAudience
+                });
+            });
             builder.ConfigureTestServices(services =>
             {
                 services.RemoveAll(typeof(AppDbContext));
+                
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseNpgsql(_dbConnection));
 
