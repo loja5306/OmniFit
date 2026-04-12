@@ -33,6 +33,12 @@ resource "aws_cloudfront_distribution" "frontend" {
     ssl_support_method = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
+
+  custom_error_response {
+    error_code = 403
+    response_code = 200
+    response_page_path = "/index.html"
+  }
 }
 
 resource "aws_cloudfront_origin_access_control" "frontend" {
