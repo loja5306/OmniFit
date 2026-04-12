@@ -38,9 +38,19 @@ resource "aws_iam_role_policy" "ec2_ssm_read_policy" {
           "ecr:GetAuthorizationToken"
         ]
         Resource = "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::omnifit-db-migrations/*"
       }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_ssm_managed" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 resource "aws_iam_instance_profile" "ec2" {

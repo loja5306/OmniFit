@@ -28,3 +28,11 @@ resource "aws_s3_bucket_policy" "frontend" {
     ]
   })
 }
+
+resource "aws_s3_bucket" "db_migrations" {
+  bucket = "omnifit-db-migrations"
+
+  tags = {
+    Name = "omnifit-db-migrations"
+  }
+}

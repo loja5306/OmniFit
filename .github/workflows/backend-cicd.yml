@@ -28,6 +28,10 @@ jobs:
 
       - run: dotnet test --no-restore --no-build
 
+      - run: dotnet tool install --global dotnet-ef
+
+      - run: dotnet ef migrations script --idempotent --project src/OmniFit.Api/OmniFit.Api.csproj -o migrations.sql
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -38,6 +42,7 @@ jobs:
 
       - run: docker build -t ${{ secrets.ECR_REGISTRY }}/omnifit-backend:latest .
       - run: docker push ${{ secrets.ECR_REGISTRY }}/omnifit-backend:latest
+      - run: aws s3 cp migrations.sql s3://omnifit-db-migrations/migrations.sql
 
   backend-cd:
     name: Backend CD
@@ -55,6 +60,9 @@ jobs:
           --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
           --document-name "AWS-RunShellScript" \
           --parameters 'commands=[
+          "aws s3 cp s3://omnifit-db-migrations/migrations.sql /opt/omnifit/migrations.sql",
+          "cd /opt/omnifit && docker compose cp migrations.sql db:/migrations.sql",
+          "cd /opt/omnifit && docker compose exec -T db sh -c \"psql -U \$POSTGRES_USER -d \$POSTGRES_DB -f /migrations.sql\"",
           "aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}",
           "docker pull ${{ secrets.ECR_REGISTRY }}/omnifit-backend:latest",
           "cd /opt/omnifit && docker compose up -d --no-deps backend"
