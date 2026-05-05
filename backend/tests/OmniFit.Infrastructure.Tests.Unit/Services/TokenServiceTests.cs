@@ -32,7 +32,7 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
             var userId = Guid.NewGuid().ToString();
 
             //Act
-            var token = _sut.CreateToken(email, userId);
+            var token = _sut.CreateToken(email, userId, null);
 
             //Assert
             var handler = new JsonWebTokenHandler();

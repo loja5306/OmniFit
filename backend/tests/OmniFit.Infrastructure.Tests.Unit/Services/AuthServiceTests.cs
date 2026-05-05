@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using OmniFit.Application.DTOs;
 using OmniFit.Application.Interfaces;
 using OmniFit.Infrastructure.Services;
@@ -42,7 +43,8 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
 
             _userManager.FindByEmailAsync(request.Email).Returns(identityUser);
             _userManager.CheckPasswordAsync(identityUser, request.Password).Returns(true);
-            _tokenService.CreateToken(request.Email, identityUser.Id).Returns(token);
+            _userManager.GetRolesAsync(identityUser).ReturnsNull();
+            _tokenService.CreateToken(request.Email, identityUser.Id, null).Returns(token);
 
             //Act
             var result = await _sut.LoginUserAsync(request);
@@ -98,7 +100,7 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
 
             _userManager.CreateAsync(Arg.Any<IdentityUser>(), request.Password)
                 .Returns(IdentityResult.Success);
-            _tokenService.CreateToken(request.Email, Arg.Any<string>()).Returns(token);
+            _tokenService.CreateToken(request.Email, Arg.Any<string>(), null).Returns(token);
 
             //Act
             var result = await _sut.RegisterUserAsync(request);
