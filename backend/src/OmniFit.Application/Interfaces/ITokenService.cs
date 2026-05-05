@@ -2,6 +2,6 @@
 {
     public interface ITokenService
     {
-        string CreateToken(string email, string userId);
+        string CreateToken(string email, string userId, IList<string>? roles);
     }
 }

@@ -33,7 +33,9 @@ namespace OmniFit.Infrastructure.Services
                 throw new AuthenticationException("The email and/or password was incorrect");
             }
 
-            string token = _tokenService.CreateToken(request.Email, user.Id);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            string token = _tokenService.CreateToken(request.Email, user.Id, roles);
 
             return new AuthResponseDto(token);
         }
@@ -54,7 +56,7 @@ namespace OmniFit.Infrastructure.Services
                     new FluentValidation.Results.ValidationFailure("Registration", e.Description)));
             }
 
-            string token = _tokenService.CreateToken(request.Email, user.Id);
+            string token = _tokenService.CreateToken(request.Email, user.Id, null);
 
             return new AuthResponseDto(token);
         }
