@@ -20,7 +20,7 @@ namespace OmniFit.Api.Controllers
             _createRequestvalidator = createRequestvalidator;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {

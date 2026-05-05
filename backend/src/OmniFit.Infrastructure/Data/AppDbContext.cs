@@ -52,6 +52,16 @@ namespace OmniFit.Infrastructure.Data
                     .WithMany(we => we.WorkoutSets)
                     .HasForeignKey(ws => ws.WorkoutExerciseId);
             });
+
+            modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole
+                {
+                    Id = "a4a244a0-8f9d-4c16-843b-fb121ef0bb88",
+                    Name = "Admin",
+                    NormalizedName = "ADMIN",
+                    ConcurrencyStamp = "b75d4aee-0984-4b23-982a-3618decec41b"
+                }
+            );
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

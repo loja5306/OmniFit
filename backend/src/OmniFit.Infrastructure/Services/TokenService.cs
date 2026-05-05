@@ -16,7 +16,7 @@ namespace OmniFit.Infrastructure.Services
             _config = config;
         }
 
-        public string CreateToken(string email, string userId)
+        public string CreateToken(string email, string userId, IList<string>? roles)
         {
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
@@ -26,6 +26,14 @@ namespace OmniFit.Infrastructure.Services
                 new Claim(JwtRegisteredClaimNames.NameId, userId),
                 new Claim(JwtRegisteredClaimNames.Email, email),
             };
+
+            if (roles != null)
+            {
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+            }
 
             var tokenHandler = new JsonWebTokenHandler();
             return tokenHandler.CreateToken(new SecurityTokenDescriptor
