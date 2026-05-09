@@ -1,15 +1,16 @@
 import { Plus } from "lucide-react";
 import { useGetAllExercises } from "../../hooks/useGetAllExercises";
-import type { Exercise } from "../../types/exerciseTypes";
 import AddExerciseModal from "./CreateExerciseModal";
 import { useState } from "react";
 import ExerciseCard from "./ExerciseCard";
+import PaginationControl from "../common/PaginationControl";
 
 const ExerciseGrid = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const { isPending, data } = useGetAllExercises();
+  const [page, setPage] = useState<number>(1);
+  const { isPending, data } = useGetAllExercises({ page: page, pageSize: 12 });
 
-  if (isPending) return <div>Pending...</div>;
+  if (isPending || !data) return <div>Pending...</div>;
 
   return (
     <div className="p-4">
@@ -27,10 +28,15 @@ const ExerciseGrid = () => {
         </button>
       </div>
       <ul className="grid grid-cols-3 gap-4 pt-2">
-        {data.map((exercise: Exercise) => (
+        {data.items.map((exercise) => (
           <ExerciseCard key={exercise.id} exercise={exercise} />
         ))}
       </ul>
+      <PaginationControl
+        page={page}
+        totalPages={data.totalPages}
+        onPageChange={setPage}
+      />
     </div>
   );
 };

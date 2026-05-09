@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Auth;
 using OmniFit.Application.Interfaces;
 using System.Security.Authentication;
 
@@ -17,7 +18,7 @@ namespace OmniFit.Infrastructure.Services
             _tokenService = tokenService;
         }
 
-        public async Task<AuthResponseDto> LoginUserAsync(LoginRequestDto request)
+        public async Task<AuthResponse> LoginUserAsync(LoginRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
@@ -37,10 +38,10 @@ namespace OmniFit.Infrastructure.Services
 
             string token = _tokenService.CreateToken(request.Email, user.Id, roles);
 
-            return new AuthResponseDto(token);
+            return new AuthResponse(token);
         }
 
-        public async Task<AuthResponseDto> RegisterUserAsync(RegisterRequestDto request)
+        public async Task<AuthResponse> RegisterUserAsync(RegisterRequest request)
         {
             var user = new IdentityUser
             {
@@ -58,7 +59,7 @@ namespace OmniFit.Infrastructure.Services
 
             string token = _tokenService.CreateToken(request.Email, user.Id, null);
 
-            return new AuthResponseDto(token);
+            return new AuthResponse(token);
         }
     }
 }

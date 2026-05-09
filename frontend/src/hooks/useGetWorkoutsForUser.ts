@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { workoutService } from "../services/workoutService";
+import type { WorkoutQueryParameters } from "../types/workoutTypes";
 
-export function useGetWorkoutsForUser() {
+export function useGetWorkoutsForUser(params?: WorkoutQueryParameters) {
   return useQuery({
-    queryKey: ["workouts"],
-    queryFn: workoutService.getForUser,
+    queryKey: ["workouts", params],
+    queryFn: () => workoutService.getForUser(params),
   });
 }

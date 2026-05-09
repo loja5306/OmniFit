@@ -30,3 +30,8 @@ export interface WorkoutResponse {
   name: string;
   totalExercises: number;
 }
+
+export interface WorkoutQueryParameters {
+  page?: number;
+  pageSize?: number;
+}

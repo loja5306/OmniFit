@@ -1,4 +1,5 @@
-﻿using OmniFit.Application.DTOs;
+﻿using OmniFit.Application.DTOs.Workouts;
+using OmniFit.Domain.Common;
 using OmniFit.Domain.Entities;
 
 namespace OmniFit.Application.Mapping
@@ -30,6 +31,17 @@ namespace OmniFit.Application.Mapping
                 workout.Id, 
                 workout.Name, 
                 workout.WorkoutExercises.Count());
+        }
+
+        public static PagedResult<WorkoutResponse> MapToResponse(
+            this PagedResult<Workout> workouts)
+        {
+            return new PagedResult<WorkoutResponse>(
+                workouts.Items.Select(w => w.MapToResponse()),
+                workouts.Page,
+                workouts.PageSize,
+                workouts.TotalCount
+            );
         }
     }
 }

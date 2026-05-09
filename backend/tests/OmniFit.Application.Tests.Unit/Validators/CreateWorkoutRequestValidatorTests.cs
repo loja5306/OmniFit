@@ -1,6 +1,6 @@
 ﻿using FluentValidation.TestHelper;
-using OmniFit.Application.DTOs;
-using OmniFit.Application.Validators;
+using OmniFit.Application.DTOs.Workouts;
+using OmniFit.Application.Validators.Workouts;
 
 namespace OmniFit.Application.Tests.Unit.Validators
 {

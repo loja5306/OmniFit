@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Auth;
 using OmniFit.Application.Interfaces;
 
 namespace OmniFit.Api.Controllers
@@ -16,7 +17,7 @@ namespace OmniFit.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             var response = await _authService.RegisterUserAsync(request);
             
@@ -24,7 +25,7 @@ namespace OmniFit.Api.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var response = await _authService.LoginUserAsync(request);
 

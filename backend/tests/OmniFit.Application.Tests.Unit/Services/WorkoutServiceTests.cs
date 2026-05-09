@@ -1,8 +1,9 @@
 ﻿
 using FluentAssertions;
 using NSubstitute;
-using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Workouts;
 using OmniFit.Application.Services;
+using OmniFit.Domain.Common;
 using OmniFit.Domain.Entities;
 using OmniFit.Domain.Interfaces;
 
@@ -41,19 +42,26 @@ namespace OmniFit.Application.Tests.Unit.Services
         public async Task GetAllWorkoutsAsync_ShouldReturnEmptyList_WhenNoWorkoutsExist()
         {
             //Arrange
-            _workoutRepository.GetAllAsync().Returns(new List<Workout>());
+            var queryFilter = new WorkoutQueryParameters();
+
+            _workoutRepository.GetAllAsync(queryFilter.Page, queryFilter.PageSize)
+                .Returns(new PagedResult<Workout>(new List<Workout>(), 1, 20, 0));
 
             //Act
-            var result = await _sut.GetAllWorkoutsAsync();
+            var result = await _sut.GetAllWorkoutsAsync(queryFilter);
 
             //Assert
-            result.Should().BeEmpty();
+            result.Items.Should().BeEmpty();
+            result.TotalCount.Should().Be(0);
+            result.Page.Should().Be(queryFilter.Page);
+            result.PageSize.Should().Be(queryFilter.PageSize);
         }
 
         [Fact]
         public async Task GetAllWorkoutsAsync_ShouldReturnResponse_WhenWorkoutsExist()
         {
             //Arrange
+            var queryFilter = new WorkoutQueryParameters();
             var workouts = new List<Workout>
             {
                 new Workout
@@ -73,16 +81,22 @@ namespace OmniFit.Application.Tests.Unit.Services
                 }
             };
 
-            _workoutRepository.GetAllAsync().Returns(workouts);
+            var pagedWorkouts = new PagedResult<Workout>
+                (workouts, queryFilter.Page, queryFilter.PageSize, workouts.Count);
+
+            _workoutRepository.GetAllAsync(queryFilter.Page, queryFilter.PageSize).Returns(pagedWorkouts);
 
             //Act
-            var result = await _sut.GetAllWorkoutsAsync();
+            var result = await _sut.GetAllWorkoutsAsync(queryFilter);
 
             //Assert
-            result.Should().HaveCount(3);
-            result.Should().Contain(w => w.Name == "Monday Workout");
-            result.Should().Contain(w => w.Name == "Tuesday Workout");
-            result.Should().Contain(w => w.Name == "Wednesday Workout");
+            result.Items.Should().HaveCount(3);
+            result.Items.Should().Contain(w => w.Name == "Monday Workout");
+            result.Items.Should().Contain(w => w.Name == "Tuesday Workout");
+            result.Items.Should().Contain(w => w.Name == "Wednesday Workout");
+            result.TotalCount.Should().Be(3);
+            result.Page.Should().Be(queryFilter.Page);
+            result.PageSize.Should().Be(queryFilter.PageSize);
         }
 
         [Fact]
@@ -123,6 +137,7 @@ namespace OmniFit.Application.Tests.Unit.Services
         public async Task GetWorkoutsByUserIdAsync_ShouldReturnResponse_WhenWorkoutsExistForUser()
         {
             //Arrange
+            var queryFilter = new WorkoutQueryParameters();
             var userId = Guid.NewGuid().ToString();
             var workouts = new List<Workout>
             {
@@ -140,29 +155,40 @@ namespace OmniFit.Application.Tests.Unit.Services
                     UserId = userId
                 },
             };
-            _workoutRepository.GetByUserIdAsync(userId).Returns(workouts);
+            var pagedWorkouts = new PagedResult<Workout>
+                (workouts, queryFilter.Page, queryFilter.PageSize, workouts.Count);
+
+            _workoutRepository.GetByUserIdAsync(queryFilter.Page, queryFilter.PageSize, userId).Returns(pagedWorkouts);
 
             //Act
-            var result = await _sut.GetWorkoutsByUserIdAsync(userId);
+            var result = await _sut.GetWorkoutsByUserIdAsync(queryFilter, userId);
 
             //Assert
-            result.Should().HaveCount(2);
-            result.Should().Contain(w => w.Name == "Monday Workout");
-            result.Should().Contain(w => w.Name == "Tuesday Workout");
+            result.Items.Should().HaveCount(2);
+            result.Items.Should().Contain(w => w.Name == "Monday Workout");
+            result.Items.Should().Contain(w => w.Name == "Tuesday Workout");
+            result.TotalCount.Should().Be(2);
+            result.Page.Should().Be(queryFilter.Page);
+            result.PageSize.Should().Be(queryFilter.PageSize);
         }
 
         [Fact]
         public async Task GetAllWorkoutsAsync_ShouldReturnEmptyList_WhenNoWorkoutsExistForUser()
         {
             //Arrange
+            var queryFilter = new WorkoutQueryParameters();
             var userId = Guid.NewGuid().ToString();
-            _workoutRepository.GetByUserIdAsync(userId).Returns(new List<Workout>());
+            _workoutRepository.GetByUserIdAsync(queryFilter.Page, queryFilter.PageSize, userId)
+                .Returns(new PagedResult<Workout>(new List<Workout>(), 1, 20, 0));
 
             //Act
-            var result = await _sut.GetWorkoutsByUserIdAsync(userId);
+            var result = await _sut.GetWorkoutsByUserIdAsync(queryFilter, userId);
 
             //Assert
-            result.Should().BeEmpty();
+            result.Items.Should().BeEmpty();
+            result.TotalCount.Should().Be(0);
+            result.Page.Should().Be(queryFilter.Page);
+            result.PageSize.Should().Be(queryFilter.PageSize);
         }
     }
 }

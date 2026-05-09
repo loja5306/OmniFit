@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
 using NSubstitute;
-using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Exercises;
 using OmniFit.Application.Services;
+using OmniFit.Domain.Common;
 using OmniFit.Domain.Entities;
 using OmniFit.Domain.Interfaces;
 
@@ -79,19 +80,25 @@ namespace OmniFit.Application.Tests.Unit.Services
         public async Task GetAllAsync_ShouldReturnEmptyList_WhenNoExercisesExist()
         {
             //Arrange
-            _exerciseRepository.GetAllAsync().Returns(new List<Exercise>());
+            var queryFilter = new ExerciseQueryParameters();
+            _exerciseRepository.GetAllAsync(queryFilter.Page, queryFilter.PageSize)
+                .Returns(new PagedResult<Exercise>(new List<Exercise>(), 1, 20, 0));
 
             //Act
-            var result = await _sut.GetAllAsync();
+            var result = await _sut.GetAllAsync(queryFilter);
 
             //Assert
-            result.Should().BeEmpty();
+            result.Items.Should().BeEmpty();
+            result.TotalCount.Should().Be(0);
+            result.Page.Should().Be(queryFilter.Page);
+            result.PageSize.Should().Be(queryFilter.PageSize);
         }
 
         [Fact]
         public async Task GetAllAsync_ShouldReturnResponse_WhenExercisesExist()
         {
             //Arrange
+            var queryFilter = new ExerciseQueryParameters();
             var exercises = new List<Exercise>
             {
                 new Exercise { Id = Guid.NewGuid(), Name = "Bench Press", Description = "Chest Exercise" },
@@ -99,16 +106,22 @@ namespace OmniFit.Application.Tests.Unit.Services
                 new Exercise { Id = Guid.NewGuid(), Name = "Pull Up", Description = "Lats Exercise" }
             };
 
-            _exerciseRepository.GetAllAsync().Returns(exercises);
+            var pagedExercises = new PagedResult<Exercise>
+                (exercises, queryFilter.Page, queryFilter.PageSize, exercises.Count);
+
+            _exerciseRepository.GetAllAsync(queryFilter.Page, queryFilter.PageSize).Returns(pagedExercises);
 
             //Act
-            var result = await _sut.GetAllAsync();
+            var result = await _sut.GetAllAsync(queryFilter);
 
             //Assert
-            result.Should().HaveCount(3);
-            result.Should().Contain(e => e.Name == "Bench Press" && e.Description == "Chest Exercise");
-            result.Should().Contain(e => e.Name == "Squat" && e.Description == "Quad Exercise");
-            result.Should().Contain(e => e.Name == "Pull Up" && e.Description == "Lats Exercise");
+            result.Items.Should().HaveCount(3);
+            result.Items.Should().Contain(e => e.Name == "Bench Press" && e.Description == "Chest Exercise");
+            result.Items.Should().Contain(e => e.Name == "Squat" && e.Description == "Quad Exercise");
+            result.Items.Should().Contain(e => e.Name == "Pull Up" && e.Description == "Lats Exercise");
+            result.TotalCount.Should().Be(3);
+            result.Page.Should().Be(queryFilter.Page);
+            result.PageSize.Should().Be(queryFilter.PageSize);
         }
 
         [Fact]

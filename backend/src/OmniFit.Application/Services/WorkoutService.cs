@@ -1,6 +1,7 @@
-﻿using OmniFit.Application.DTOs;
+﻿using OmniFit.Application.DTOs.Workouts;
 using OmniFit.Application.Interfaces;
 using OmniFit.Application.Mapping;
+using OmniFit.Domain.Common;
 using OmniFit.Domain.Interfaces;
 
 namespace OmniFit.Application.Services
@@ -24,11 +25,11 @@ namespace OmniFit.Application.Services
             return workout.Id;
         }
 
-        public async Task<IEnumerable<WorkoutResponse>> GetAllWorkoutsAsync()
+        public async Task<PagedResult<WorkoutResponse>> GetAllWorkoutsAsync(WorkoutQueryParameters request)
         {
-            var workouts = await _workoutRepository.GetAllAsync();
+            var workouts = await _workoutRepository.GetAllAsync(request.Page, request.PageSize);
 
-            return workouts.Select(w => w.MapToResponse());
+            return workouts.MapToResponse();
         }
 
         public async Task<WorkoutResponse?> GetWorkoutByIdAsync(Guid id)
@@ -40,11 +41,11 @@ namespace OmniFit.Application.Services
             return workout.MapToResponse();
         }
 
-        public async Task<IEnumerable<WorkoutResponse>> GetWorkoutsByUserIdAsync(string userId)
+        public async Task<PagedResult<WorkoutResponse>> GetWorkoutsByUserIdAsync(WorkoutQueryParameters request, string userId)
         {
-            var workouts = await _workoutRepository.GetByUserIdAsync(userId);
+            var workouts = await _workoutRepository.GetByUserIdAsync(request.Page, request.PageSize, userId);
 
-            return workouts.Select(w => w.MapToResponse());
+            return workouts.MapToResponse();
         }
     }
 }

@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { exerciseService } from "../services/exerciseService";
+import type { ExerciseQueryParameters } from "../types/exerciseTypes";
 
-export function useGetAllExercises() {
+export function useGetAllExercises(params?: ExerciseQueryParameters) {
   return useQuery({
-    queryKey: ["exercises"],
-    queryFn: exerciseService.getAll,
+    queryKey: ["exercises", params],
+    queryFn: () => exerciseService.getAll(params),
   });
 }

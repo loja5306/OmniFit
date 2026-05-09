@@ -2,11 +2,10 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
-using Newtonsoft.Json.Linq;
 using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Auth;
 using System.Net;
 using System.Net.Http.Json;
-using System.Security.Claims;
 
 namespace OmniFit.Api.Tests.Integration.Controllers
 {
@@ -25,7 +24,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Register_ShouldReturnToken_WhenUserIsValid()
         {
             //Arrange
-            var request = new RegisterRequestDto("lukeatkinson@gmail.com", "Password123!");
+            var request = new RegisterRequest("lukeatkinson@gmail.com", "Password123!");
 
             //Act
             var response = await _httpClient.PostAsJsonAsync("Auth/Register", request);
@@ -33,7 +32,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var content = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+            var content = await response.Content.ReadFromJsonAsync<AuthResponse>();
 
             content.Should().NotBeNull();
 
@@ -47,7 +46,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Register_ShouldReturnValidationError_WhenUserIsInvalid()
         {
             //Arrange
-            var request = new RegisterRequestDto("lukeatkinson@gmail.com", "Pass1");
+            var request = new RegisterRequest("lukeatkinson@gmail.com", "Pass1");
 
             //Act
             var response = await _httpClient.PostAsJsonAsync("Auth/Register", request);
@@ -66,7 +65,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Login_ShouldReturnToken_WhenUserIsValid()
         {
             //Arrange
-            var request = new RegisterRequestDto("lukeatkinson@gmail.com", "Password123!");
+            var request = new RegisterRequest("lukeatkinson@gmail.com", "Password123!");
             await _httpClient.PostAsJsonAsync("Auth/Register", request);
 
             //Act
@@ -75,7 +74,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var content = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+            var content = await response.Content.ReadFromJsonAsync<AuthResponse>();
 
             content.Should().NotBeNull();
 
@@ -89,7 +88,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Login_ShouldReturnUnauthorized_WhenUserDoesNotExist()
         {
             //Arrange
-            var request = new RegisterRequestDto("lukeatkinson@gmail.com", "Password123!");
+            var request = new RegisterRequest("lukeatkinson@gmail.com", "Password123!");
 
             //Act
             var response = await _httpClient.PostAsJsonAsync("Auth/Login", request);

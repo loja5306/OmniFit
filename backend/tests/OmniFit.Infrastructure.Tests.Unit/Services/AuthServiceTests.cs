@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Auth;
 using OmniFit.Application.Interfaces;
 using OmniFit.Infrastructure.Services;
 using System.Security.Authentication;
@@ -32,7 +32,7 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
         public async Task LoginUserAsync_ShouldReturnToken_WhenUserIsValid()
         {
             //Arrange
-            var request = new LoginRequestDto("lukeatkinson@gmail.com", "Password123!");
+            var request = new LoginRequest("lukeatkinson@gmail.com", "Password123!");
             var identityUser = new IdentityUser
             {
                 Id = Guid.NewGuid().ToString(),
@@ -57,7 +57,7 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
         public async Task LoginUserAsync_ShouldThrowException_WhenUserEmailIsInvalid()
         {
             //Arrange
-            var request = new LoginRequestDto("lukeatkinson@gmail.com", "Password123!");
+            var request = new LoginRequest("lukeatkinson@gmail.com", "Password123!");
 
             _userManager.FindByEmailAsync(request.Email).Returns((IdentityUser)null!);
 
@@ -73,7 +73,7 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
         public async Task LoginUserAsync_ShouldThrowException_WhenUserPasswordIsInvalid()
         {
             //Arrange
-            var request = new LoginRequestDto("lukeatkinson@gmail.com", "Password123!");
+            var request = new LoginRequest("lukeatkinson@gmail.com", "Password123!");
             var identityUser = new IdentityUser
             {
                 UserName = request.Email,
@@ -95,7 +95,7 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
         public async Task RegisterUserAsync_ShouldReturnToken_WhenUserIsValid()
         {
             //Arrange
-            var request = new RegisterRequestDto("lukeatkinson@gmail.com", "Password123!");
+            var request = new RegisterRequest("lukeatkinson@gmail.com", "Password123!");
             var token = Guid.NewGuid().ToString();
 
             _userManager.CreateAsync(Arg.Any<IdentityUser>(), request.Password)
@@ -113,7 +113,7 @@ namespace OmniFit.Infrastructure.Tests.Unit.Services
         public async Task RegisterUserAsync_ShouldThrowValidationException_WhenUserIsInvalid()
         {
             //Arrange
-            var request = new RegisterRequestDto("lukeatkinson@gmail.com", "pass");
+            var request = new RegisterRequest("lukeatkinson@gmail.com", "pass");
             var identityUser = new IdentityUser
             {
                 UserName = request.Email,

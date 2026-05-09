@@ -1,13 +1,20 @@
 import { Plus } from "lucide-react";
 import { useGetWorkoutsForUser } from "../../hooks/useGetWorkoutsForUser";
 import type { WorkoutResponse } from "../../types/workoutTypes";
+import WorkoutListItem from "./WorkoutListItem";
+import PaginationControl from "../common/PaginationControl";
+import { useState } from "react";
 
 interface Props {
   onCreateWorkout: () => void;
 }
 
 const WorkoutListPanel = ({ onCreateWorkout }: Props) => {
-  const { isPending, data } = useGetWorkoutsForUser();
+  const [page, setPage] = useState<number>(1);
+  const { isPending, data } = useGetWorkoutsForUser({
+    page: page,
+    pageSize: 1,
+  });
 
   return (
     <div className="max-w-lg mx-auto bg-white mt-6 p-4 rounded-lg shadow-md">
@@ -22,24 +29,23 @@ const WorkoutListPanel = ({ onCreateWorkout }: Props) => {
       </div>
       {isPending ? (
         <div>Loading...</div>
-      ) : (
+      ) : data ? (
         <div className="flex flex-col gap-2">
-          {data.map((workout: WorkoutResponse) => (
+          {data.items.map((workout: WorkoutResponse) => (
             <div
               key={workout.id}
               className="p-3 rounded-md shadow-lg border border-gray-200"
             >
-              <div>
-                <p className="font-semibold">{workout.name}</p>
-                <p className="text-sm text-gray-500">
-                  {workout.totalExercises}{" "}
-                  {workout.totalExercises === 1 ? "exercise" : "exercises"}
-                </p>
-              </div>
+              <WorkoutListItem workout={workout} />
             </div>
           ))}
+          <PaginationControl
+            page={page}
+            totalPages={data.totalPages}
+            onPageChange={setPage}
+          />
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

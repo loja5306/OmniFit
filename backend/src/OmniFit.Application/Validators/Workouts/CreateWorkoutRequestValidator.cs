@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Workouts;
 
-namespace OmniFit.Application.Validators
+namespace OmniFit.Application.Validators.Workouts
 {
     public class CreateWorkoutRequestValidator : AbstractValidator<CreateWorkoutRequest>
     {

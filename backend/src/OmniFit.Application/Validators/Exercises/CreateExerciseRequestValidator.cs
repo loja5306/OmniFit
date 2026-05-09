@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
-using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Exercises;
 
-namespace OmniFit.Application.Validators
+namespace OmniFit.Application.Validators.Exercises
 {
-    public class UpdateExerciseRequestValidator : AbstractValidator<UpdateExerciseRequest>
+    public class CreateExerciseRequestValidator : AbstractValidator<CreateExerciseRequest>
     {
-        public UpdateExerciseRequestValidator()
+        public CreateExerciseRequestValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Exercise name is required")
