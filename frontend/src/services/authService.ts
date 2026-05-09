@@ -1,10 +1,14 @@
-import type { LoginRequest, RegisterRequest } from "../types/authTypes";
+import {
+  type AuthResponse,
+  type LoginRequest,
+  type RegisterRequest,
+} from "../types/authTypes";
 import { apiClient } from "../utils/apiClient";
 
 export const authService = {
   login: async (request: LoginRequest) => {
     try {
-      return await apiClient("/auth/login", {
+      return await apiClient<AuthResponse>("/auth/login", {
         method: "POST",
         body: JSON.stringify(request),
       });
@@ -14,7 +18,7 @@ export const authService = {
   },
   register: async (request: RegisterRequest) => {
     try {
-      return await apiClient("/auth/register", {
+      return await apiClient<AuthResponse>("/auth/register", {
         method: "POST",
         body: JSON.stringify(request),
       });
