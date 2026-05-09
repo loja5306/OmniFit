@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OmniFit.Domain.Common;
 using OmniFit.Domain.Entities;
 using OmniFit.Domain.Interfaces;
 using OmniFit.Infrastructure.Data;
+using OmniFit.Infrastructure.Extensions;
 
 namespace OmniFit.Infrastructure.Repositories
 {
@@ -19,26 +21,41 @@ namespace OmniFit.Infrastructure.Repositories
             await _context.AddAsync(workout);
         }
 
-        public async Task<IEnumerable<Workout>> GetAllAsync()
+        public async Task<PagedResult<Workout>> GetAllAsync(int page, int pageSize)
         {
-            return await _context.Workouts
+            var query = _context.Workouts
                 .Include(w => w.WorkoutExercises)
                     .ThenInclude(we => we.Exercise)
                 .Include(w => w.WorkoutExercises)
                     .ThenInclude(we => we.WorkoutSets)
-                .OrderByDescending(w => w.CreatedOn)
+                .OrderByDescending(w => w.CreatedOn);
+
+            var count = await query.CountAsync();
+
+            var items = await query
+                .ApplyPagination(page, pageSize)
                 .ToListAsync();
+
+            return new(items, page, pageSize, count);
         }
-        public async Task<IEnumerable<Workout>> GetByUserIdAsync(string userId)
+        
+        public async Task<PagedResult<Workout>> GetByUserIdAsync(int page, int pageSize, string userId)
         {
-            return await _context.Workouts
+            var query = _context.Workouts
                 .Include(w => w.WorkoutExercises)
                     .ThenInclude(we => we.Exercise)
                 .Include(w => w.WorkoutExercises)
                     .ThenInclude(we => we.WorkoutSets)
                 .Where(w => w.UserId == userId)
-                .OrderByDescending(w => w.CreatedOn)
+                .OrderByDescending(w => w.CreatedOn);
+
+            var count = await query.CountAsync();
+
+            var items = await query
+                .ApplyPagination(page, pageSize)
                 .ToListAsync();
+
+            return new(items, page, pageSize, count);
         }
 
         public async Task<Workout?> GetByIdAsync(Guid id)

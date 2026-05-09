@@ -1,7 +1,7 @@
-﻿using OmniFit.Application.DTOs;
+﻿using OmniFit.Application.DTOs.Exercises;
 using OmniFit.Application.Interfaces;
 using OmniFit.Application.Mapping;
-using OmniFit.Domain.Entities;
+using OmniFit.Domain.Common;
 using OmniFit.Domain.Interfaces;
 
 namespace OmniFit.Application.Services
@@ -37,11 +37,11 @@ namespace OmniFit.Application.Services
             return true;
         }
 
-        public async Task<IEnumerable<ExerciseResponse>> GetAllAsync()
+        public async Task<PagedResult<ExerciseResponse>> GetAllAsync(ExerciseQueryParameters request)
         {
-            var exercises = await _exerciseRepository.GetAllAsync();
+            var exercises = await _exerciseRepository.GetAllAsync(request.Page, request.PageSize);
 
-            return exercises.Select(e => e.MapToResponse());
+            return exercises.MapToResponse();
         }
 
         public async Task<ExerciseResponse?> GetByIdAsync(Guid id)

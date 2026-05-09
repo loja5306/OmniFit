@@ -1,10 +1,11 @@
 ﻿using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Auth;
 
 namespace OmniFit.Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<AuthResponseDto> RegisterUserAsync(RegisterRequestDto request);
-        Task<AuthResponseDto> LoginUserAsync(LoginRequestDto request);
+        Task<AuthResponse> RegisterUserAsync(RegisterRequest request);
+        Task<AuthResponse> LoginUserAsync(LoginRequest request);
     }
 }

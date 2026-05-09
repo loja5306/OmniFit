@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Workouts;
 using OmniFit.Application.Mapping;
 using OmniFit.Domain.Entities;
 

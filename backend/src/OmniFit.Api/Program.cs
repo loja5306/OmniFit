@@ -9,7 +9,7 @@ using OmniFit.Api.HealthChecks;
 using OmniFit.Api.Middleware;
 using OmniFit.Application.Interfaces;
 using OmniFit.Application.Services;
-using OmniFit.Application.Validators;
+using OmniFit.Application.Validators.Workouts;
 using OmniFit.Domain.Interfaces;
 using OmniFit.Infrastructure.Data;
 using OmniFit.Infrastructure.Repositories;

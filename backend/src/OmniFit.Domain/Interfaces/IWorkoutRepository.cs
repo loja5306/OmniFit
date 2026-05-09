@@ -1,4 +1,5 @@
-﻿using OmniFit.Domain.Entities;
+﻿using OmniFit.Domain.Common;
+using OmniFit.Domain.Entities;
 
 namespace OmniFit.Domain.Interfaces
 {
@@ -6,8 +7,8 @@ namespace OmniFit.Domain.Interfaces
     {
         Task AddAsync(Workout workout);
         Task<Workout?> GetByIdAsync(Guid id);
-        Task<IEnumerable<Workout>> GetAllAsync();
-        Task<IEnumerable<Workout>> GetByUserIdAsync(string userId);
+        Task<PagedResult<Workout>> GetAllAsync(int page, int pageSize);
+        Task<PagedResult<Workout>> GetByUserIdAsync(int page, int pageSize, string userId);
         Task SaveChangesAsync();
     }
 }

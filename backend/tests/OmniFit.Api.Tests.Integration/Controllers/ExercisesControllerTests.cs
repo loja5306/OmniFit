@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using OmniFit.Application.DTOs;
+using OmniFit.Application.DTOs.Exercises;
+using OmniFit.Domain.Common;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -101,8 +102,11 @@ namespace OmniFit.Api.Tests.Integration.Controllers
 
             //Assert
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var content = await getResponse.Content.ReadFromJsonAsync<IEnumerable<ExerciseResponse>>();
-            content.Should().BeEmpty();
+            var content = await getResponse.Content.ReadFromJsonAsync<PagedResult<ExerciseResponse>>();
+            content!.Items.Should().BeEmpty();
+            content.TotalCount.Should().Be(0);
+            content.Page.Should().Be(1);
+            content.PageSize.Should().Be(20);
         }
 
         [Fact]
@@ -122,10 +126,13 @@ namespace OmniFit.Api.Tests.Integration.Controllers
 
             //Assert
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var content = await getResponse.Content.ReadFromJsonAsync<IEnumerable<ExerciseResponse>>();
-            content.Should().HaveCount(2);
-            content.Should().Contain(e => e.Id == id1);
-            content.Should().Contain(e => e.Id == id2);
+            var content = await getResponse.Content.ReadFromJsonAsync<PagedResult<ExerciseResponse>>();
+            content!.Items.Should().HaveCount(2);
+            content.Items.Should().Contain(e => e.Id == id1);
+            content.Items.Should().Contain(e => e.Id == id2);
+            content.TotalCount.Should().Be(2);
+            content.Page.Should().Be(1);
+            content.PageSize.Should().Be(20);
         }
 
         [Fact]
