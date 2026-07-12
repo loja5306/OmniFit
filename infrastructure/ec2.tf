@@ -10,6 +10,10 @@ resource "aws_instance" "main" {
   tags = {
     Name = "omnifit-ec2"
   }
+
+  lifecycle {
+    ignore_changes = [ami]
+  }
 }
 
 resource "aws_eip" "main" {
