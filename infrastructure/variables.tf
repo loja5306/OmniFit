@@ -32,3 +32,8 @@ variable "jwt_key" {
   type      = string
   sensitive = true
 }
+
+variable "admin_ip" {
+  type      = string
+  sensitive = true
+}
