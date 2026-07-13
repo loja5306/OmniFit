@@ -8,6 +8,7 @@ import Exercises from "./pages/Exercises";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Layout from "./components/common/Layout";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -21,8 +22,10 @@ createRoot(document.getElementById("root")!).render(
           <Routes>
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/workouts" element={<Workouts />} />
-              <Route path="/exercises" element={<Exercises />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/workouts" element={<Workouts />} />
+                <Route path="/exercises" element={<Exercises />} />
+              </Route>
             </Route>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
