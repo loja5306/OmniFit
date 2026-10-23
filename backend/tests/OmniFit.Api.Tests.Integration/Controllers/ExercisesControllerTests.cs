@@ -10,12 +10,14 @@ namespace OmniFit.Api.Tests.Integration.Controllers
     public class ExercisesControllerTests : IClassFixture<ApiFactory>, IAsyncLifetime
     {
         private readonly ApiFactory _factory;
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _adminClient;
+        private readonly HttpClient _userClient;
 
         public ExercisesControllerTests(ApiFactory factory)
         {
             _factory = factory;
-            _httpClient = factory.HttpClient;
+            _adminClient = factory.CreateClientForUser(TestData.Users.AdminUser.Id, ["Admin"]);
+            _userClient = factory.CreateClientForUser(TestData.Users.StandardUser.Id, []);
         }
 
         [Fact]
@@ -25,7 +27,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var exercise = new ExerciseRequest("Bench Press", "Chest Exercise");
 
             //Act
-            var response = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
+            var response = await _adminClient.PostAsJsonAsync("/Exercises", exercise);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -44,7 +46,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var exercise = new ExerciseRequest(string.Empty, new string('A', 501));
 
             //Act
-            var response = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
+            var response = await _adminClient.PostAsJsonAsync("/Exercises", exercise);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -65,11 +67,11 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             //Arrange
             var exercise = new ExerciseRequest("Bench Press", "Chest Exercise");
 
-            var createResponse = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
+            var createResponse = await _adminClient.PostAsJsonAsync("/Exercises", exercise);
             var id = await createResponse.Content.ReadFromJsonAsync<Guid>();
 
             //Act
-            var getResponse = await _httpClient.GetAsync($"/Exercises/{id}");
+            var getResponse = await _adminClient.GetAsync($"/Exercises/{id}");
 
             //Assert
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -88,7 +90,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var id = Guid.NewGuid();
 
             //Act
-            var getResponse = await _httpClient.GetAsync($"/Exercises/{id}");
+            var getResponse = await _adminClient.GetAsync($"/Exercises/{id}");
 
             //Assert
             getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -98,7 +100,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task GetAll_ReturnsEmptyList_WhenNoExercisesExist()
         {
             //Act
-            var getResponse = await _httpClient.GetAsync($"/Exercises");
+            var getResponse = await _adminClient.GetAsync($"/Exercises");
 
             //Assert
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -116,13 +118,13 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var exercise1 = new ExerciseRequest("Bench Press", "Chest Exercise");
             var exercise2 = new ExerciseRequest("Squat", "Quad Exercise");
             
-            var createResponse1 = await _httpClient.PostAsJsonAsync("/Exercises", exercise1);
+            var createResponse1 = await _adminClient.PostAsJsonAsync("/Exercises", exercise1);
             var id1 = await createResponse1.Content.ReadFromJsonAsync<Guid>();
-            var createResponse2 = await _httpClient.PostAsJsonAsync("/Exercises", exercise2);
+            var createResponse2 = await _adminClient.PostAsJsonAsync("/Exercises", exercise2);
             var id2 = await createResponse2.Content.ReadFromJsonAsync<Guid>();
 
             //Act
-            var getResponse = await _httpClient.GetAsync($"/Exercises");
+            var getResponse = await _adminClient.GetAsync($"/Exercises");
 
             //Assert
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -142,11 +144,11 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var exercise = new ExerciseRequest("Bench Press", "Chest Exercise");
             var updatedExercise = new ExerciseRequest("Squat", "Quad Exercise");
 
-            var createResponse = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
+            var createResponse = await _adminClient.PostAsJsonAsync("/Exercises", exercise);
             var id = await createResponse.Content.ReadFromJsonAsync<Guid>();
 
             //Act
-            var updateResponse = await _httpClient.PutAsJsonAsync($"/Exercises/{id}", updatedExercise);
+            var updateResponse = await _adminClient.PutAsJsonAsync($"/Exercises/{id}", updatedExercise);
 
             //Assert
             updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -160,11 +162,11 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var exercise = new ExerciseRequest("Bench Press", "Chest Exercise");
             var updatedExercise = new ExerciseRequest(string.Empty, new string('A', 501));
 
-            var createResponse = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
+            var createResponse = await _adminClient.PostAsJsonAsync("/Exercises", exercise);
             var id = await createResponse.Content.ReadFromJsonAsync<Guid>();
 
             //Act
-            var updateResponse = await _httpClient.PutAsJsonAsync($"/Exercises/{id}", updatedExercise);
+            var updateResponse = await _adminClient.PutAsJsonAsync($"/Exercises/{id}", updatedExercise);
 
             //Assert
             updateResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -186,7 +188,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var updatedExercise = new ExerciseRequest("Squat", "Quad Exercise");
 
             //Act
-            var updateResponse = await _httpClient.PutAsJsonAsync($"/Exercises/{id}", updatedExercise);
+            var updateResponse = await _adminClient.PutAsJsonAsync($"/Exercises/{id}", updatedExercise);
 
             //Assert
             updateResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -198,11 +200,11 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             //Arrange
             var exercise = new ExerciseRequest("Bench Press", "Chest Exercise");
 
-            var createResponse = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
+            var createResponse = await _adminClient.PostAsJsonAsync("/Exercises", exercise);
             var id = await createResponse.Content.ReadFromJsonAsync<Guid>();
 
             //Act
-            var updateResponse = await _httpClient.DeleteAsync($"/Exercises/{id}");
+            var updateResponse = await _adminClient.DeleteAsync($"/Exercises/{id}");
 
             //Assert
             updateResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -215,7 +217,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var id = Guid.NewGuid();
 
             //Act
-            var updateResponse = await _httpClient.DeleteAsync($"/Exercises/{id}");
+            var updateResponse = await _adminClient.DeleteAsync($"/Exercises/{id}");
 
             //Assert
             updateResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
