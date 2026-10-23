@@ -11,13 +11,13 @@ namespace OmniFit.Api.Controllers
     public class ExercisesController : ControllerBase
     {
         private readonly IExerciseService _exerciseService;
-        private readonly IValidator<ExerciseRequest> _exercixeRequestValidator;
+        private readonly IValidator<ExerciseRequest> _exerciseRequestValidator;
         private readonly IValidator<ExerciseQueryParameters> _queryParametersValidator;
 
         public ExercisesController(IExerciseService exerciseService, IValidator<ExerciseRequest> exerciseRequestValidator, IValidator<ExerciseQueryParameters> queryParametersValidator)
         {
             _exerciseService = exerciseService;
-            _exercixeRequestValidator = exerciseRequestValidator;
+            _exerciseRequestValidator = exerciseRequestValidator;
             _queryParametersValidator = queryParametersValidator;
         }
 
@@ -48,7 +48,7 @@ namespace OmniFit.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ExerciseRequest request)
         {
-            await _exercixeRequestValidator.ValidateAndThrowAsync(request);
+            await _exerciseRequestValidator.ValidateAndThrowAsync(request);
 
             var id = await _exerciseService.CreateAsync(request);
 
@@ -59,7 +59,7 @@ namespace OmniFit.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] ExerciseRequest request)
         {
-            await _exercixeRequestValidator.ValidateAndThrowAsync(request);
+            await _exerciseRequestValidator.ValidateAndThrowAsync(request);
 
             var updatedExercise = await _exerciseService.UpdateAsync(id, request);
 
