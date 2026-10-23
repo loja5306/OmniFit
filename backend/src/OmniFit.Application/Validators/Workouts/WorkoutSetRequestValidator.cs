@@ -7,6 +7,9 @@ namespace OmniFit.Application.Validators.Workouts
     {
         public WorkoutSetRequestValidator()
         {
+            RuleFor(x => x.SetNumber)
+                .GreaterThan(0).WithMessage("Set Number must be greater than 0");
+
             RuleFor(x => x.Reps)
                 .GreaterThanOrEqualTo(0).WithMessage("Reps cannot be negative");
 

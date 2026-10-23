@@ -1,20 +1,18 @@
 ﻿using FluentValidation;
 using OmniFit.Application.DTOs.Workouts;
+using OmniFit.Domain.Interfaces;
 
 namespace OmniFit.Application.Validators.Workouts
 {
     public class WorkoutExerciseRequestValidator : AbstractValidator<WorkoutExerciseRequest>
     {
-        public WorkoutExerciseRequestValidator()
+        public WorkoutExerciseRequestValidator(IExerciseRepository exerciseRepository)
         {
             RuleFor(x => x.ExerciseId)
-                .NotEmpty().WithMessage("Exercise ID is required");
-
-            RuleFor(x => x.Sets)
-                .NotEmpty().WithMessage("Each exercise must have at least 1 set");
-
-            RuleForEach(x => x.Sets)
-                .SetValidator(new WorkoutSetRequestValidator());
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("Exercise ID is required")
+                .MustAsync(async (exerciseId, ct) => await exerciseRepository.GetByIdAsync(exerciseId) != null)
+                .WithMessage("Exercise does not exist");
         }
     }
 }

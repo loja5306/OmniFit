@@ -3,9 +3,9 @@ using OmniFit.Application.DTOs.Exercises;
 
 namespace OmniFit.Application.Validators.Exercises
 {
-    public class UpdateExerciseRequestValidator : AbstractValidator<UpdateExerciseRequest>
+    public class ExerciseRequestValidator : AbstractValidator<ExerciseRequest>
     {
-        public UpdateExerciseRequestValidator()
+        public ExerciseRequestValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Exercise name is required")

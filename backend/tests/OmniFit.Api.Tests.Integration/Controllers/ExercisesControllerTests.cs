@@ -22,7 +22,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Create_CreatesExercise_WhenExerciseIsValid()
         {
             //Arrange
-            var exercise = new CreateExerciseRequest("Bench Press", "Chest Exercise");
+            var exercise = new ExerciseRequest("Bench Press", "Chest Exercise");
 
             //Act
             var response = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
@@ -41,7 +41,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Create_ReturnsValidationError_WhenExerciseIsInvalid()
         {
             //Arrange
-            var exercise = new CreateExerciseRequest(string.Empty, new string('A', 501));
+            var exercise = new ExerciseRequest(string.Empty, new string('A', 501));
 
             //Act
             var response = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
@@ -63,7 +63,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task GetById_ReturnsExercise_WhenExerciseExists()
         {
             //Arrange
-            var exercise = new CreateExerciseRequest("Bench Press", "Chest Exercise");
+            var exercise = new ExerciseRequest("Bench Press", "Chest Exercise");
 
             var createResponse = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
             var id = await createResponse.Content.ReadFromJsonAsync<Guid>();
@@ -113,8 +113,8 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task GetAll_ReturnsAllExercises_WhenExercisesExist()
         {
             //Arrange
-            var exercise1 = new CreateExerciseRequest("Bench Press", "Chest Exercise");
-            var exercise2 = new CreateExerciseRequest("Squat", "Quad Exercise");
+            var exercise1 = new ExerciseRequest("Bench Press", "Chest Exercise");
+            var exercise2 = new ExerciseRequest("Squat", "Quad Exercise");
             
             var createResponse1 = await _httpClient.PostAsJsonAsync("/Exercises", exercise1);
             var id1 = await createResponse1.Content.ReadFromJsonAsync<Guid>();
@@ -139,8 +139,8 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Update_ReturnsUpdatedExercise_WhenExerciseExistsAndRequestIsValid()
         {
             //Arrange
-            var exercise = new CreateExerciseRequest("Bench Press", "Chest Exercise");
-            var updatedExercise = new CreateExerciseRequest("Squat", "Quad Exercise");
+            var exercise = new ExerciseRequest("Bench Press", "Chest Exercise");
+            var updatedExercise = new ExerciseRequest("Squat", "Quad Exercise");
 
             var createResponse = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
             var id = await createResponse.Content.ReadFromJsonAsync<Guid>();
@@ -157,8 +157,8 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Update_ReturnsValidationError_WhenExerciseExistsAndRequestIsInvalid()
         {
             //Arrange
-            var exercise = new CreateExerciseRequest("Bench Press", "Chest Exercise");
-            var updatedExercise = new CreateExerciseRequest(string.Empty, new string('A', 501));
+            var exercise = new ExerciseRequest("Bench Press", "Chest Exercise");
+            var updatedExercise = new ExerciseRequest(string.Empty, new string('A', 501));
 
             var createResponse = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
             var id = await createResponse.Content.ReadFromJsonAsync<Guid>();
@@ -183,7 +183,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         {
             //Arrange
             var id = Guid.NewGuid();
-            var updatedExercise = new CreateExerciseRequest("Squat", "Quad Exercise");
+            var updatedExercise = new ExerciseRequest("Squat", "Quad Exercise");
 
             //Act
             var updateResponse = await _httpClient.PutAsJsonAsync($"/Exercises/{id}", updatedExercise);
@@ -196,7 +196,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Delete_ReturnsNoContent_WhenExerciseExists()
         {
             //Arrange
-            var exercise = new CreateExerciseRequest("Bench Press", "Chest Exercise");
+            var exercise = new ExerciseRequest("Bench Press", "Chest Exercise");
 
             var createResponse = await _httpClient.PostAsJsonAsync("/Exercises", exercise);
             var id = await createResponse.Content.ReadFromJsonAsync<Guid>();

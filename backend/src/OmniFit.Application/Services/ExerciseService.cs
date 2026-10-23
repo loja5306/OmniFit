@@ -15,7 +15,7 @@ namespace OmniFit.Application.Services
             _exerciseRepository = exerciseRepository;
         }
 
-        public async Task<Guid> CreateAsync(CreateExerciseRequest request)
+        public async Task<Guid> CreateAsync(ExerciseRequest request)
         {
             var exercise = request.MapToEntity();
 
@@ -53,7 +53,7 @@ namespace OmniFit.Application.Services
             return exercise.MapToResponse();
         }
 
-        public async Task<ExerciseResponse?> UpdateAsync(Guid id, UpdateExerciseRequest request)
+        public async Task<ExerciseResponse?> UpdateAsync(Guid id, ExerciseRequest request)
         {
             var exercise = await _exerciseRepository.GetByIdAsync(id);
 

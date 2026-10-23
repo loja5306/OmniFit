@@ -1,6 +1,6 @@
 namespace OmniFit.Application.DTOs.Exercises
 {
-    public record CreateExerciseRequest (
+    public record ExerciseRequest (
         string Name, 
         string Description
     );

@@ -21,6 +21,23 @@ namespace OmniFit.Infrastructure.Repositories
             await _context.AddAsync(workout);
         }
 
+        public async Task<Workout?> GetByIdAsync(Guid id, string? userId = null)
+        {
+            var query = _context.Workouts
+                .Include(w => w.WorkoutExercises)
+                    .ThenInclude(we => we.Exercise)
+                .Include(w => w.WorkoutExercises)
+                    .ThenInclude(we => we.WorkoutSets)
+                .Where(w => w.Id == id);
+
+            if (userId != null)
+            {
+                query = query.Where(w => w.UserId == userId);
+            }
+
+            return await query.FirstOrDefaultAsync();
+        }
+
         public async Task<PagedResult<Workout>> GetAllAsync(int page, int pageSize)
         {
             var query = _context.Workouts
@@ -58,14 +75,29 @@ namespace OmniFit.Infrastructure.Repositories
             return new(items, page, pageSize, count);
         }
 
-        public async Task<Workout?> GetByIdAsync(Guid id)
+        public async Task AddExerciseAsync(WorkoutExercise workoutExercise)
         {
-            return await _context.Workouts
-                .Include(w => w.WorkoutExercises)
-                    .ThenInclude(we => we.Exercise)
-                .Include(w => w.WorkoutExercises)
-                    .ThenInclude(we => we.WorkoutSets)
-                .FirstOrDefaultAsync(w => w.Id == id);
+            await _context.AddAsync(workoutExercise);
+        }
+
+        public void RemoveExercise(WorkoutExercise workoutExercise)
+        {
+            _context.Remove(workoutExercise);
+        }
+
+        public async Task AddSetAsync(WorkoutSet workoutSet)
+        {
+            await _context.AddAsync(workoutSet);
+        }
+
+        public void UpdateSet(WorkoutSet workoutSet)
+        {
+            _context.WorkoutSets.Update(workoutSet);
+        }
+
+        public void RemoveSet(WorkoutSet workoutSet)
+        {
+            _context.Remove(workoutSet);
         }
 
         public async Task SaveChangesAsync()

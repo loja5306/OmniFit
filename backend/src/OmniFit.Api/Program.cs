@@ -42,7 +42,7 @@ builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateWorkoutRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<WorkoutRequestValidator>();
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
 

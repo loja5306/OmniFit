@@ -11,15 +11,13 @@ namespace OmniFit.Api.Controllers
     public class ExercisesController : ControllerBase
     {
         private readonly IExerciseService _exerciseService;
-        private readonly IValidator<CreateExerciseRequest> _createRequestValidator;
-        private readonly IValidator<UpdateExerciseRequest> _updateRequestValidator;
+        private readonly IValidator<ExerciseRequest> _exercixeRequestValidator;
         private readonly IValidator<ExerciseQueryParameters> _queryParametersValidator;
 
-        public ExercisesController(IExerciseService exerciseService, IValidator<CreateExerciseRequest> createRequestValidator, IValidator<UpdateExerciseRequest> updateRequestValidator, IValidator<ExerciseQueryParameters> queryParametersValidator)
+        public ExercisesController(IExerciseService exerciseService, IValidator<ExerciseRequest> exerciseRequestValidator, IValidator<ExerciseQueryParameters> queryParametersValidator)
         {
             _exerciseService = exerciseService;
-            _createRequestValidator = createRequestValidator;
-            _updateRequestValidator = updateRequestValidator;
+            _exercixeRequestValidator = exerciseRequestValidator;
             _queryParametersValidator = queryParametersValidator;
         }
 
@@ -48,9 +46,9 @@ namespace OmniFit.Api.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateExerciseRequest request)
+        public async Task<IActionResult> Create([FromBody] ExerciseRequest request)
         {
-            await _createRequestValidator.ValidateAndThrowAsync(request);
+            await _exercixeRequestValidator.ValidateAndThrowAsync(request);
 
             var id = await _exerciseService.CreateAsync(request);
 
@@ -59,9 +57,9 @@ namespace OmniFit.Api.Controllers
 
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateExerciseRequest request)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] ExerciseRequest request)
         {
-            await _updateRequestValidator.ValidateAndThrowAsync(request);
+            await _exercixeRequestValidator.ValidateAndThrowAsync(request);
 
             var updatedExercise = await _exerciseService.UpdateAsync(id, request);
 

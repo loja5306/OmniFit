@@ -7,7 +7,7 @@ namespace OmniFit.Application.Mapping
 {
     public static class ExerciseMappingExtensions
     {
-        public static Exercise MapToEntity(this CreateExerciseRequest request)
+        public static Exercise MapToEntity(this ExerciseRequest request)
         {
             return new Exercise
             {

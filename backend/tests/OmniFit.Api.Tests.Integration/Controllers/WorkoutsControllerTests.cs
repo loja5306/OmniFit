@@ -26,22 +26,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Create_CreatesWorkout_WhenWorkoutIsValid()
         {
             //Arrange
-            var workout = new CreateWorkoutRequest("Monday Workout",
-                new List<WorkoutExerciseRequest>
-                {
-                    new WorkoutExerciseRequest(TestData.Exercises.BenchPressExercise.Id, new List<WorkoutSetRequest>
-                    {
-                        new WorkoutSetRequest(1, 5, 80),
-                        new WorkoutSetRequest(2, 6, 70),
-                        new WorkoutSetRequest(3, 5, 70),
-                    }),
-                    new WorkoutExerciseRequest(TestData.Exercises.SquatExercise.Id, new List<WorkoutSetRequest>
-                    {
-                        new WorkoutSetRequest(1, 5, 80),
-                        new WorkoutSetRequest(2, 5, 75),
-                        new WorkoutSetRequest(3, 3, 75),
-                    })
-                });
+            var workout = new WorkoutRequest("Monday Workout");
 
             //Act
             var response = await _httpClient.PostAsJsonAsync("/Workouts", workout);
@@ -60,17 +45,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task Create_ReturnsValidationError_WhenWorkoutIsInvalid()
         {
             //Arrange
-            var workout = new CreateWorkoutRequest(string.Empty,
-                new List<WorkoutExerciseRequest>
-                {
-                    new WorkoutExerciseRequest(TestData.Exercises.SquatExercise.Id, new List<WorkoutSetRequest>
-                    {
-                        new WorkoutSetRequest(1, 5, -80),
-                        new WorkoutSetRequest(2, -6, 70),
-                        new WorkoutSetRequest(3, 5, 70),
-                    }),
-                    new WorkoutExerciseRequest(TestData.Exercises.BenchPressExercise.Id, new List<WorkoutSetRequest>())
-                });
+            var workout = new WorkoutRequest(string.Empty);
 
             //Act
             var response = await _httpClient.PostAsJsonAsync("/Workouts", workout);
@@ -84,37 +59,13 @@ namespace OmniFit.Api.Tests.Integration.Controllers
 
             content.Errors.Should().ContainKey("Name")
                 .WhoseValue.Should().Contain("Workout name is required");
-            content.Errors.Should().Contain(e => 
-                e.Key.EndsWith("Sets") && 
-                e.Value.Contains("Each exercise must have at least 1 set"));
-            content.Errors.Should().Contain(e =>
-                e.Key.EndsWith("Weight") && 
-                e.Value.Contains("Weight cannot be negative"));
-            content.Errors.Should().Contain(e =>
-                e.Key.EndsWith("Reps") && 
-                e.Value.Contains("Reps cannot be negative"));
         }
 
         [Fact]
         public async Task GetById_ReturnsWorkout_WhenWorkoutExists()
         {
             //Arrange
-            var workout = new CreateWorkoutRequest("Monday Workout",
-                new List<WorkoutExerciseRequest>
-                {
-                    new WorkoutExerciseRequest(TestData.Exercises.SquatExercise.Id, new List<WorkoutSetRequest>
-                    {
-                        new WorkoutSetRequest(1, 5, 80),
-                        new WorkoutSetRequest(2, 6, 70),
-                        new WorkoutSetRequest(3, 5, 70),
-                    }),
-                    new WorkoutExerciseRequest(TestData.Exercises.BenchPressExercise.Id, new List<WorkoutSetRequest>
-                    {
-                        new WorkoutSetRequest(1, 5, 80),
-                        new WorkoutSetRequest(2, 5, 75),
-                        new WorkoutSetRequest(3, 3, 75),
-                    })
-                });
+            var workout = new WorkoutRequest("Monday Workout");
 
             var response = await _httpClient.PostAsJsonAsync("/Workouts", workout);
             var id = await response.Content.ReadFromJsonAsync<Guid>();
@@ -129,7 +80,6 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             getResponseContent.Should().NotBeNull();
             getResponseContent.Id.Should().Be(id);
             getResponseContent.Name.Should().Be(workout.Name);
-            getResponseContent.TotalExercises.Should().Be(2);
         }
 
         [Fact]
@@ -164,38 +114,8 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         public async Task GetAll_ReturnsAllWorkouts_WhenWorkoutsExist()
         {
             //Arrange
-            var workout1 = new CreateWorkoutRequest("Monday Workout",
-                new List<WorkoutExerciseRequest>
-                {
-                    new WorkoutExerciseRequest(TestData.Exercises.SquatExercise.Id, new List<WorkoutSetRequest>
-                    {
-                        new WorkoutSetRequest(1, 5, 80),
-                        new WorkoutSetRequest(2, 6, 70),
-                        new WorkoutSetRequest(3, 5, 70),
-                    }),
-                    new WorkoutExerciseRequest(TestData.Exercises.BenchPressExercise.Id, new List<WorkoutSetRequest>
-                    {
-                        new WorkoutSetRequest(1, 5, 80),
-                        new WorkoutSetRequest(2, 5, 75),
-                        new WorkoutSetRequest(3, 3, 75),
-                    })
-                });
-            var workout2 = new CreateWorkoutRequest("Wednesday Workout",
-                new List<WorkoutExerciseRequest>
-                {
-                    new WorkoutExerciseRequest(TestData.Exercises.SquatExercise.Id, new List<WorkoutSetRequest>
-                    {
-                        new WorkoutSetRequest(1, 6, 80),
-                        new WorkoutSetRequest(2, 7, 70),
-                        new WorkoutSetRequest(3, 5, 70),
-                    }),
-                    new WorkoutExerciseRequest(TestData.Exercises.BenchPressExercise.Id, new List<WorkoutSetRequest>
-                    {
-                        new WorkoutSetRequest(1, 6, 80),
-                        new WorkoutSetRequest(2, 5, 75),
-                        new WorkoutSetRequest(3, 5, 75),
-                    })
-                });
+            var workout1 = new WorkoutRequest("Monday Workout");
+            var workout2 = new WorkoutRequest("Wednesday Workout");
 
             var response1 = await _httpClient.PostAsJsonAsync("/Workouts", workout1);
             var id1 = await response1.Content.ReadFromJsonAsync<Guid>();

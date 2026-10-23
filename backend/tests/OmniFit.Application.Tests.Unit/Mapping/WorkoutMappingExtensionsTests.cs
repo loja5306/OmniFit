@@ -2,6 +2,7 @@
 using OmniFit.Application.DTOs.Workouts;
 using OmniFit.Application.Mapping;
 using OmniFit.Domain.Entities;
+using OmniFit.Domain.Enums;
 
 namespace OmniFit.Application.Tests.Unit.Mapping
 {
@@ -12,9 +13,7 @@ namespace OmniFit.Application.Tests.Unit.Mapping
         {
             //Arrange
             var userId = Guid.NewGuid().ToString();
-            var setRequest = new WorkoutSetRequest(1, 10, 60);
-            var exerciseRequest = new WorkoutExerciseRequest(Guid.NewGuid(), new List<WorkoutSetRequest> { setRequest });
-            var request = new CreateWorkoutRequest("Monday Workout", new List<WorkoutExerciseRequest> { exerciseRequest });
+            var request = new WorkoutRequest("Monday Workout");
 
             //Act
             var result = request.MapToEntity(userId);
@@ -23,47 +22,7 @@ namespace OmniFit.Application.Tests.Unit.Mapping
             result.Id.Should().NotBeEmpty();
             result.Name.Should().Be(request.Name);
             result.UserId.Should().Be(userId);
-            result.WorkoutExercises.Should().NotBeNull();
-            result.WorkoutExercises.First().WorkoutSets.Should().NotBeNull();
-            result.WorkoutExercises.First().WorkoutSets.Should().Contain(e => e.SetNumber == setRequest.SetNumber);
-            result.WorkoutExercises.First().WorkoutSets.Should().Contain(e => e.Reps == setRequest.Reps);
-            result.WorkoutExercises.First().WorkoutSets.Should().Contain(e => e.Weight == setRequest.Weight);
-        }
-
-        [Fact]
-        public void MapToEntity_ShouldMapRequestToEntity_WhenRequestProvidedWithNoExercises()
-        {
-            //Arrange
-            var userId = Guid.NewGuid().ToString();
-            var request = new CreateWorkoutRequest("Monday Workout", null);
-
-            //Act
-            var result = request.MapToEntity(userId);
-
-            //Assert
-            result.Id.Should().NotBeEmpty();
-            result.Name.Should().Be(request.Name);
-            result.UserId.Should().Be(userId);
-            result.WorkoutExercises.Count.Should().Be(0);
-        }
-
-        [Fact]
-        public void MapToEntity_ShouldMapRequestToEntity_WhenRequestProvidedWithNoSets()
-        {
-            //Arrange
-            var userId = Guid.NewGuid().ToString();
-            var exerciseRequest = new WorkoutExerciseRequest(Guid.NewGuid(), null);
-            var request = new CreateWorkoutRequest("Monday Workout", new List<WorkoutExerciseRequest> { exerciseRequest });
-
-            //Act
-            var result = request.MapToEntity(userId);
-
-            //Assert
-            result.Id.Should().NotBeEmpty();
-            result.Name.Should().Be(request.Name);
-            result.UserId.Should().Be(userId);
-            result.WorkoutExercises.Should().NotBeNull();
-            result.WorkoutExercises.First().WorkoutSets.Count.Should().Be(0);
+            result.Status.Should().Be(WorkoutStatus.InProgress);
         }
 
         [Fact]

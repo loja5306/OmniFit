@@ -11,7 +11,7 @@ namespace OmniFit.Application.Tests.Unit.Mapping
         public void MapToEntity_ShouldMapRequestToEntity_WhenRequestProvided()
         {
             //Arrange
-            var request = new CreateExerciseRequest("Bench Press", "Chest Exercise");
+            var request = new ExerciseRequest("Bench Press", "Chest Exercise");
 
             //Act
             var result = request.MapToEntity();

@@ -6,13 +6,13 @@ namespace OmniFit.Application.Tests.Unit.Validators
 {
     public class CreateWorkoutRequestValidatorTests
     {
-        private readonly CreateWorkoutRequestValidator _sut = new();
+        private readonly WorkoutRequestValidator _sut = new();
 
         [Fact]
         public void CreateWorkoutRequestValidator_ShouldThrowError_WhenNameEmpty()
         {
             //Arrange
-            var request = new CreateWorkoutRequest("");
+            var request = new WorkoutRequest("");
 
             //Act
             var result = _sut.TestValidate(request);
@@ -26,7 +26,7 @@ namespace OmniFit.Application.Tests.Unit.Validators
         public void CreateWorkoutRequestValidator_ShouldThrowError_WhenNameIsOver100Characters()
         {
             //Arrange
-            var request = new CreateWorkoutRequest(new string('A', 101));
+            var request = new WorkoutRequest(new string('A', 101));
 
             //Act
             var result = _sut.TestValidate(request);
@@ -34,20 +34,6 @@ namespace OmniFit.Application.Tests.Unit.Validators
             //Assert
             result.ShouldHaveValidationErrorFor(x => x.Name)
                 .WithErrorMessage("Workout name cannot exceed 100 characters");
-        }
-
-        [Fact]
-        public void CreateWorkoutRequestValidator_ShouldThrowError_WhenNoExercisesExist()
-        {
-            //Arrange
-            var request = new CreateWorkoutRequest("Monday Workout");
-
-            //Act
-            var result = _sut.TestValidate(request);
-
-            //Assert
-            result.ShouldHaveValidationErrorFor(x => x.Exercises)
-                .WithErrorMessage("A workout must have at least 1 exercise");
         }
     }
 }

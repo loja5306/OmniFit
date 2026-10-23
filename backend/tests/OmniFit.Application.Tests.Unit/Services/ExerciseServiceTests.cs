@@ -24,7 +24,7 @@ namespace OmniFit.Application.Tests.Unit.Services
         public async Task CreateAsync_ShouldCreateExerciseAndReturnId_WhenMethodCalled()
         {
             //Arrange
-            var request = new CreateExerciseRequest("Bench Press", "Chest Exercise");
+            var request = new ExerciseRequest("Bench Press", "Chest Exercise");
 
             //Act
             var result = await _sut.CreateAsync(request);
@@ -163,7 +163,7 @@ namespace OmniFit.Application.Tests.Unit.Services
         {
             //Arrange
             var id = Guid.NewGuid();
-            var updateRequest = new UpdateExerciseRequest("Bench Press", "Chest Exercise");
+            var updateRequest = new ExerciseRequest("Bench Press", "Chest Exercise");
             _exerciseRepository.GetByIdAsync(id).Returns((Exercise?)null);
 
             //Act
@@ -178,7 +178,7 @@ namespace OmniFit.Application.Tests.Unit.Services
         {
             //Arrange
             var id = Guid.NewGuid();
-            var updateRequest = new UpdateExerciseRequest("Bench Press", "Chest Exercise");
+            var updateRequest = new ExerciseRequest("Bench Press", "Chest Exercise");
 
             var existingExercise = new Exercise
             {

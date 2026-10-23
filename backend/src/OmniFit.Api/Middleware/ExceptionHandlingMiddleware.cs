@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
+using OmniFit.Domain.Exceptions;
 using System.Security.Authentication;
 
 namespace OmniFit.Api.Middleware
@@ -32,6 +34,12 @@ namespace OmniFit.Api.Middleware
             if (exception is ValidationException)
             {
                 await HandleValidationException(httpContext, (ValidationException)exception);
+                return;
+            }
+
+            if (exception is BusinessRuleException)
+            {
+                await HandleValidationException(httpContext, new ValidationException([new ValidationFailure(((BusinessRuleException)exception).PropertyName, exception.Message)]));
                 return;
             }
 
