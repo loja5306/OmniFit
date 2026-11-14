@@ -36,18 +36,18 @@ namespace OmniFit.Application.Services
             return workout.Id;
         }
 
-        public async Task<PagedResult<WorkoutResponse>> GetAllWorkoutsAsync(WorkoutQueryParameters request)
+        public async Task<PagedResult<WorkoutSummaryResponse>> GetAllWorkoutsAsync(WorkoutQueryParameters request)
         {
             var workouts = await _workoutRepository.GetAllAsync(request.Page, request.PageSize);
 
-            return workouts.MapToResponse();
+            return workouts.MapToSummary();
         }
 
-        public async Task<PagedResult<WorkoutResponse>> GetWorkoutsByUserIdAsync(WorkoutQueryParameters request, string userId)
+        public async Task<PagedResult<WorkoutSummaryResponse>> GetWorkoutsByUserIdAsync(WorkoutQueryParameters request, string userId)
         {
             var workouts = await _workoutRepository.GetByUserIdAsync(request.Page, request.PageSize, userId);
 
-            return workouts.MapToResponse();
+            return workouts.MapToSummary();
         }
 
         public async Task<WorkoutResponse?> GetWorkoutByIdAsync(Guid id, string? userId = null)
@@ -67,6 +67,7 @@ namespace OmniFit.Application.Services
             ThrowIfWorkoutCompleted(workout);
             if (workout.WorkoutExercises.Count == 0) throw new BusinessRuleException("WorkoutExercises", "A workout must have at least 1 exercise");
             if (workout.WorkoutExercises.Any(we => we.WorkoutSets.Count == 0)) throw new BusinessRuleException("WorkoutExercises", "Each exercise must have at least 1 set");
+            if (workout.WorkoutExercises.Any(we => we.WorkoutSets.Any(ws => ws.Reps == null || ws.Weight == null))) throw new BusinessRuleException("WorkoutSets", "Each set must have the reps and weight entered");
 
             workout.Status = WorkoutStatus.Completed;
             workout.CompletedOn = DateTimeOffset.UtcNow;

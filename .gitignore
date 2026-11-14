@@ -49,3 +49,4 @@ e2e/playwright/.auth/
 terraform.rc
 
 .ssh
+.sonarqube

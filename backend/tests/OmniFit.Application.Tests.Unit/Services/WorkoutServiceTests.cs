@@ -293,6 +293,29 @@ namespace OmniFit.Application.Tests.Unit.Services
             await _workoutRepository.DidNotReceive().SaveChangesAsync();
         }
 
+        [Theory]
+        [InlineData(10, null)]
+        [InlineData(null, 100.0)]
+        [InlineData(null, null)]
+        public async Task CompleteWorkoutAsync_ShouldThrowError_WhenAnySetIsNotComplete(int? reps, double? weight)
+        {
+            //Arrange
+            var userId = Guid.NewGuid().ToString();
+            var workout = CreateWorkout(userId, exerciseCount: 1, setsPerExercise: 1);
+            workout.WorkoutExercises[0].WorkoutSets[0].Reps = reps;
+            workout.WorkoutExercises[0].WorkoutSets[0].Weight = weight;
+
+            _workoutRepository.GetByIdAsync(workout.Id, userId).Returns(workout);
+            
+            //Act
+            Func<Task> act = async () => await _sut.CompleteWorkoutAsync(workout.Id, userId);
+
+            //Assert
+            await act.Should().ThrowAsync<BusinessRuleException>()
+                .WithMessage("Each set must have the reps and weight entered");
+            await _workoutRepository.DidNotReceive().SaveChangesAsync();
+        }
+
         [Fact]
         public async Task AddExerciseAsync_ShouldReturnIdAndCallRepository_WhenRequestIsValid()
         {
@@ -552,8 +575,8 @@ namespace OmniFit.Application.Tests.Unit.Services
             _workoutRepository.Received(1).UpdateSet(Arg.Is<WorkoutSet>(ws => 
                 ws.Id == workoutSet.Id &&
                 ws.SetNumber == workoutSet.SetNumber &&
-                ws.Reps == ws.Reps &&
-                ws.Weight == ws.Weight
+                ws.Reps == workoutSet.Reps &&
+                ws.Weight == workoutSet.Weight
             ));
             await _workoutRepository.Received(1).SaveChangesAsync();
         }
@@ -674,10 +697,7 @@ namespace OmniFit.Application.Tests.Unit.Services
             //Assert
             result.Should().BeTrue();
             _workoutRepository.Received(1).RemoveSet(Arg.Is<WorkoutSet>(ws => 
-                ws.Id == workoutSet.Id &&
-                ws.SetNumber == workoutSet.SetNumber &&
-                ws.Reps == ws.Reps &&
-                ws.Weight == ws.Weight
+                ws.Id == workoutSet.Id
             ));
             await _workoutRepository.Received(1).SaveChangesAsync();
         }
@@ -792,10 +812,16 @@ namespace OmniFit.Application.Tests.Unit.Services
                     .Select(_ => 
                     {
                         var workoutExerciseId = Guid.NewGuid();
+                        var exerciseId = Guid.NewGuid();
                         return new WorkoutExercise
                         {
                             Id = workoutExerciseId,
-                            ExerciseId = Guid.NewGuid(),
+                            ExerciseId = exerciseId,
+                            Exercise = new Exercise
+                            {
+                                Id = exerciseId, 
+                                Name = "Bench Press"
+                            },
                             WorkoutId = workoutId,
                             WorkoutSets = Enumerable.Range(1, setsPerExercise)
                                 .Select(n => new WorkoutSet

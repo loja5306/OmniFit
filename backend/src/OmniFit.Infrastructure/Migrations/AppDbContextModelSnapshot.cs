@@ -321,7 +321,7 @@ namespace OmniFit.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Reps")
+                    b.Property<int?>("Reps")
                         .HasColumnType("integer");
 
                     b.Property<int>("SetNumber")
@@ -330,7 +330,7 @@ namespace OmniFit.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("UpdatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<double>("Weight")
+                    b.Property<double?>("Weight")
                         .HasColumnType("double precision");
 
                     b.Property<Guid>("WorkoutExerciseId")

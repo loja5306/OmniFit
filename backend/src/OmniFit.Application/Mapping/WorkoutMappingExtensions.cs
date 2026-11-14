@@ -17,6 +17,16 @@ namespace OmniFit.Application.Mapping
             };
         }
 
+        public static WorkoutSummaryResponse MapToSummary(this Workout workout)
+        {
+            return new WorkoutSummaryResponse(
+                workout.Id, 
+                workout.Name,
+                workout.Status,
+                workout.CompletedOn,
+                workout.WorkoutExercises.Count);
+        }
+
         public static WorkoutResponse MapToResponse(this Workout workout)
         {
             return new WorkoutResponse(
@@ -24,17 +34,27 @@ namespace OmniFit.Application.Mapping
                 workout.Name,
                 workout.Status,
                 workout.CompletedOn,
-                workout.WorkoutExercises.Count());
+                workout.WorkoutExercises.Select(we => we.MapToResponse()).ToList());
         }
 
-        public static PagedResult<WorkoutResponse> MapToResponse(
+        public static PagedResult<WorkoutSummaryResponse> MapToSummary(
             this PagedResult<Workout> workouts)
         {
-            return new PagedResult<WorkoutResponse>(
-                workouts.Items.Select(w => w.MapToResponse()),
+            return new PagedResult<WorkoutSummaryResponse>(
+                workouts.Items.Select(w => w.MapToSummary()).ToList(),
                 workouts.Page,
                 workouts.PageSize,
                 workouts.TotalCount
+            );
+        }
+
+        public static WorkoutExerciseResponse MapToResponse(this WorkoutExercise workoutExercise)
+        {
+            return new WorkoutExerciseResponse(
+                workoutExercise.Id,
+                workoutExercise.ExerciseId,
+                workoutExercise.Exercise.Name,
+                workoutExercise.WorkoutSets.Select(ws => ws.MapToResponse()).ToList()
             );
         }
 

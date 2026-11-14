@@ -159,7 +159,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
 
             //Assert
             getForUserResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var content = await getForUserResponse.Content.ReadFromJsonAsync<PagedResult<WorkoutResponse>>();
+            var content = await getForUserResponse.Content.ReadFromJsonAsync<PagedResult<WorkoutSummaryResponse>>();
             content.Should().NotBeNull();
             content.TotalCount.Should().Be(2);
             var workoutIds = content.Items.Select(w => w.Id);
@@ -177,7 +177,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
 
             //Assert
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var content = await getResponse.Content.ReadFromJsonAsync<PagedResult<WorkoutResponse>>();
+            var content = await getResponse.Content.ReadFromJsonAsync<PagedResult<WorkoutSummaryResponse>>();
             content.Should().NotBeNull();
             content.Items.Should().BeEmpty();
             content.TotalCount.Should().Be(0);
@@ -202,7 +202,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
 
             //Assert
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var content = await getResponse.Content.ReadFromJsonAsync<PagedResult<WorkoutResponse>>();
+            var content = await getResponse.Content.ReadFromJsonAsync<PagedResult<WorkoutSummaryResponse>>();
             content.Should().NotBeNull();
             content.Items.Should().HaveCount(2);
             content.Items.Should().Contain(e => e.Id == id1);

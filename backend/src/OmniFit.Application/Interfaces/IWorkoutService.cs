@@ -6,8 +6,8 @@ namespace OmniFit.Application.Interfaces
     public interface IWorkoutService
     {
         Task<Guid> CreateWorkoutAsync(WorkoutRequest request, string userId);
-        Task<PagedResult<WorkoutResponse>> GetAllWorkoutsAsync(WorkoutQueryParameters request);
-        Task<PagedResult<WorkoutResponse>> GetWorkoutsByUserIdAsync(WorkoutQueryParameters request, string userId);
+        Task<PagedResult<WorkoutSummaryResponse>> GetAllWorkoutsAsync(WorkoutQueryParameters request);
+        Task<PagedResult<WorkoutSummaryResponse>> GetWorkoutsByUserIdAsync(WorkoutQueryParameters request, string userId);
         Task<WorkoutResponse?> GetWorkoutByIdAsync(Guid id, string? userId = null);
         Task<bool> CompleteWorkoutAsync(Guid workoutId, string userId);
         Task<Guid?> AddExerciseAsync(Guid workoutId, WorkoutExerciseRequest request, string userId);

@@ -4,7 +4,7 @@ namespace OmniFit.Application.DTOs.Workouts
         Guid Id,
         Guid WorkoutExerciseId,
         int SetNumber,
-        int Reps,
-        double Weight
+        int? Reps,
+        double? Weight
     );
 }

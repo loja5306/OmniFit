@@ -1,44 +1,78 @@
 import { X } from "lucide-react";
-import type { WorkoutSet } from "../../types/workoutTypes";
+import type { WorkoutSetResponse } from "../../types/workoutTypes";
+import { useRemoveWorkoutSet } from "../../hooks/useRemoveWorkoutSet";
+import { useUpdateWorkoutSet } from "../../hooks/useUpdateWorkoutSet";
+import { useState } from "react";
 
 interface Props {
-  set: WorkoutSet;
-  exerciseIndex: number;
+  workoutId: string;
+  workoutExerciseId: string;
+  workoutSet: WorkoutSetResponse;
   showDeleteButton: boolean;
-  onUpdateSet: (
-    exerciseIndex: number,
-    setNumber: number,
-    field: "reps" | "weight",
-    value: number,
-  ) => void;
-  onDeleteSet: (exerciseIndex: number, setNumber: number) => void;
+  isReadOnly: boolean;
 }
 
 const WorkoutSetRow = ({
-  set,
-  exerciseIndex,
+  workoutId,
+  workoutExerciseId,
+  workoutSet,
   showDeleteButton,
-  onUpdateSet,
-  onDeleteSet,
+  isReadOnly,
 }: Props) => {
+  const [updatedSet, setUpdatedSet] = useState<WorkoutSetResponse>(workoutSet);
+
+  const updateWorkoutSet = useUpdateWorkoutSet(workoutId);
+  const removeWorkoutSet = useRemoveWorkoutSet(workoutId);
+
+  const handleUpdateWorkoutSet = async () => {
+    try {
+      await updateWorkoutSet.mutateAsync({
+        workoutExerciseId: workoutExerciseId,
+        workoutSetId: updatedSet.id,
+        request: {
+          setNumber: updatedSet.setNumber,
+          reps: updatedSet.reps,
+          weight: updatedSet.weight,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleRemoveWorkoutSet = async () => {
+    try {
+      await removeWorkoutSet.mutateAsync({
+        workoutExerciseId: workoutExerciseId,
+        workoutSetId: workoutSet.id,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="p-3 rounded-md shadow-lg border border-gray-200">
       <div className="flex justify-between items-end gap-4">
-        <p className="font-semibold flex-shrink-0 pb-1">Set {set.setNumber}</p>
+        <p className="font-semibold flex-shrink-0 pb-1">
+          Set {updatedSet.setNumber}
+        </p>
         <div>
           <label>Reps</label>
           <input
             className="w-full px-2 py-1 text-sm border rounded-lg bg-white"
             type="number"
-            value={set.reps}
+            disabled={isReadOnly}
+            value={updatedSet.reps ?? ""}
             onChange={(e) =>
-              onUpdateSet(
-                exerciseIndex,
-                set.setNumber,
-                "reps",
-                e.target.valueAsNumber,
-              )
+              setUpdatedSet({
+                ...updatedSet,
+                reps: Number.isNaN(e.target.valueAsNumber)
+                  ? null
+                  : e.target.valueAsNumber,
+              })
             }
+            onBlur={handleUpdateWorkoutSet}
           />
         </div>
         <div>
@@ -46,22 +80,24 @@ const WorkoutSetRow = ({
           <input
             className="w-full px-2 py-1 text-sm border rounded-lg bg-white"
             type="number"
-            value={set.weight}
+            disabled={isReadOnly}
+            value={updatedSet.weight ?? ""}
             onChange={(e) =>
-              onUpdateSet(
-                exerciseIndex,
-                set.setNumber,
-                "weight",
-                e.target.valueAsNumber,
-              )
+              setUpdatedSet({
+                ...updatedSet,
+                weight: Number.isNaN(e.target.valueAsNumber)
+                  ? null
+                  : e.target.valueAsNumber,
+              })
             }
+            onBlur={handleUpdateWorkoutSet}
           />
         </div>
         <div className="size-6 flex-shrink-0 mb-1">
-          {showDeleteButton && (
+          {showDeleteButton && !isReadOnly && (
             <button
               className="bg-red-400 size-full rounded-2xl font-bold text-xl cursor-pointer"
-              onClick={() => onDeleteSet(exerciseIndex, set.setNumber)}
+              onClick={handleRemoveWorkoutSet}
             >
               <X
                 size={16}

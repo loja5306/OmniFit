@@ -11,6 +11,7 @@ import Layout from "./components/common/Layout";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./contexts/AuthContext";
+import Workout from "./pages/Workout";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/" element={<Home />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/workouts" element={<Workouts />} />
+                <Route path="/workout/:workoutId" element={<Workout />} />
                 <Route path="/exercises" element={<Exercises />} />
               </Route>
             </Route>

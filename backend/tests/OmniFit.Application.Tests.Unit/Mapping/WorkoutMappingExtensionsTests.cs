@@ -64,7 +64,8 @@ namespace OmniFit.Application.Tests.Unit.Mapping
             //Assert
             result.Id.Should().Be(workout.Id);
             result.Name.Should().Be(workout.Name);
-            result.TotalExercises.Should().Be(workout.WorkoutExercises.Count());
+            result.WorkoutExercises.Should().NotBeNull();
+            result.WorkoutExercises.Count().Should().Be(workout.WorkoutExercises.Count());
         }
     }
 }

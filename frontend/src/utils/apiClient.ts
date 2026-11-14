@@ -2,6 +2,15 @@ import { TOKEN_KEY } from "./constants";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+export class ApiError extends Error {
+  messages: string[];
+
+  constructor(messages: string[]) {
+    super(messages.join(","));
+    this.messages = messages;
+  }
+}
+
 export async function apiClient<T>(
   endpoint: string,
   options: RequestInit = {},
@@ -19,8 +28,13 @@ export async function apiClient<T>(
 
   if (!response.ok) {
     const data = await response.json().catch(() => null);
-    throw new Error(data?.message ?? "Something went wrong.");
+    const errorMessages: string[] = data?.errors
+      ? Object.values<string[]>(data.errors).flat()
+      : ["Something went wrong"];
+    throw new ApiError(errorMessages);
   }
+
+  if (response.status === 204) return undefined as T;
 
   return response.json();
 }
