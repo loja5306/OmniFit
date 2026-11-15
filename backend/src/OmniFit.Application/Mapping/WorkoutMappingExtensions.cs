@@ -54,7 +54,10 @@ namespace OmniFit.Application.Mapping
                 workoutExercise.Id,
                 workoutExercise.ExerciseId,
                 workoutExercise.Exercise.Name,
-                workoutExercise.WorkoutSets.Select(ws => ws.MapToResponse()).ToList()
+                workoutExercise.WorkoutSets
+                    .OrderBy(ws => ws.SetNumber)
+                    .Select(ws => ws.MapToResponse())
+                    .ToList()
             );
         }
 

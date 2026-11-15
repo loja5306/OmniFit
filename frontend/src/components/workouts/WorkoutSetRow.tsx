@@ -8,6 +8,7 @@ interface Props {
   workoutId: string;
   workoutExerciseId: string;
   workoutSet: WorkoutSetResponse;
+  displaySetNumber: number;
   showDeleteButton: boolean;
   isReadOnly: boolean;
 }
@@ -16,6 +17,7 @@ const WorkoutSetRow = ({
   workoutId,
   workoutExerciseId,
   workoutSet,
+  displaySetNumber,
   showDeleteButton,
   isReadOnly,
 }: Props) => {
@@ -55,7 +57,7 @@ const WorkoutSetRow = ({
     <div className="p-3 rounded-md shadow-lg border border-gray-200">
       <div className="flex justify-between items-end gap-4">
         <p className="font-semibold flex-shrink-0 pb-1">
-          Set {updatedSet.setNumber}
+          Set {displaySetNumber}
         </p>
         <div>
           <label>Reps</label>

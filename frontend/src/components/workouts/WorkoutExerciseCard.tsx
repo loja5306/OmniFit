@@ -24,10 +24,14 @@ const WorkoutExerciseCard = ({
 
   const handleAddWorkoutSet = async () => {
     try {
+      const nextSetNumber =
+        Math.max(0, ...workoutExercise.workoutSets.map((ws) => ws.setNumber)) +
+        1;
+
       await addWorkoutSet.mutateAsync({
         workoutExerciseId: workoutExercise.id,
         request: {
-          setNumber: workoutExercise.workoutSets.length + 1,
+          setNumber: nextSetNumber,
           reps: null,
           weight: null,
         },
@@ -59,13 +63,14 @@ const WorkoutExerciseCard = ({
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        {workoutExercise.workoutSets.map((workoutSet) => {
+        {workoutExercise.workoutSets.map((workoutSet, i) => {
           return (
             <WorkoutSetRow
               key={workoutSet.id}
               workoutId={workoutId}
               workoutExerciseId={workoutExercise.id}
               workoutSet={workoutSet}
+              displaySetNumber={i + 1}
               showDeleteButton={workoutExercise.workoutSets.length > 1}
               isReadOnly={isReadOnly}
             />
