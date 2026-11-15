@@ -14,7 +14,13 @@ const Workout = () => {
   const { workoutId } = useParams();
   const navigate = useNavigate();
 
-  const workout = useGetWorkoutById(workoutId!).data;
+  const {
+    data: workout,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useGetWorkoutById(workoutId!);
   const addWorkoutExercise = useAddWorkoutExercise(workoutId!);
   const completeWorkout = useCompleteWorkout(workoutId!);
   const isReadOnly = workout?.status === "Completed";
@@ -38,6 +44,22 @@ const Workout = () => {
       console.error(err);
     }
   };
+
+  if (isPending) {
+    return (
+      <div className="max-w-lg mx-auto bg-white mt-6 p-4 rounded-lg shadow-md">
+        Loading...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="max-w-lg mx-auto bg-white mt-6 p-4 rounded-lg shadow-md">
+        <ErrorBox errorMessages={[error.message]} onRetry={() => refetch()} />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-lg mx-auto bg-white mt-6 p-4 rounded-lg shadow-md">
