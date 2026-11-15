@@ -26,8 +26,14 @@ const WorkoutSetRow = ({
   const updateWorkoutSet = useUpdateWorkoutSet(workoutId);
   const removeWorkoutSet = useRemoveWorkoutSet(workoutId);
 
+  const repsInvalid =
+    updatedSet.reps !== null &&
+    (updatedSet.reps < 0 || !Number.isInteger(updatedSet.reps));
+  const weightInvalid = updatedSet.weight !== null && updatedSet.weight < 0;
+
   const handleUpdateWorkoutSet = async () => {
     try {
+      if (repsInvalid || weightInvalid) return;
       await updateWorkoutSet.mutateAsync({
         workoutExerciseId: workoutExerciseId,
         workoutSetId: updatedSet.id,
@@ -62,8 +68,11 @@ const WorkoutSetRow = ({
         <div>
           <label>Reps</label>
           <input
-            className="w-full px-2 py-1 text-sm border rounded-lg bg-white"
+            className={`w-full px-2 py-1 text-sm border rounded-lg bg-white 
+              ${repsInvalid ? "border-red-400" : ""}`}
             type="number"
+            min={0}
+            step={1}
             disabled={isReadOnly}
             value={updatedSet.reps ?? ""}
             onChange={(e) =>
@@ -80,8 +89,10 @@ const WorkoutSetRow = ({
         <div>
           <label>Weight</label>
           <input
-            className="w-full px-2 py-1 text-sm border rounded-lg bg-white"
+            className={`w-full px-2 py-1 text-sm border rounded-lg bg-white
+              ${weightInvalid ? "border-red-400" : ""}`}
             type="number"
+            min={0}
             disabled={isReadOnly}
             value={updatedSet.weight ?? ""}
             onChange={(e) =>
