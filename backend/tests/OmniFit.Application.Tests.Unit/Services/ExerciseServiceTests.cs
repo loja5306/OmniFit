@@ -191,7 +191,6 @@ namespace OmniFit.Application.Tests.Unit.Services
             var result = await _sut.UpdateAsync(id, updateRequest);
 
             //Assert
-            _exerciseRepository.Received(1).Update(Arg.Any<Exercise>());
             await _exerciseRepository.Received(1).SaveChangesAsync();
         }
     }

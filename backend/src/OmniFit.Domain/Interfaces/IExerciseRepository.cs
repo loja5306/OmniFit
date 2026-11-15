@@ -8,7 +8,6 @@ namespace OmniFit.Domain.Interfaces
         Task AddAsync(Exercise exercise);
         Task<Exercise?> GetByIdAsync(Guid id);
         Task<PagedResult<Exercise>> GetAllAsync(int page, int pageSize);
-        void Update(Exercise exercise);
         Task SaveChangesAsync();
     }
 }

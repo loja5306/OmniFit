@@ -43,11 +43,6 @@ namespace OmniFit.Infrastructure.Repositories
                 .Where(e => !e.IsDeleted)
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
-        
-        public void Update(Exercise exercise)
-        {
-            _context.Exercises.Update(exercise);
-        }
 
         public async Task SaveChangesAsync()
         {

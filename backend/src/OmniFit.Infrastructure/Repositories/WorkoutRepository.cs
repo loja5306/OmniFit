@@ -90,11 +90,6 @@ namespace OmniFit.Infrastructure.Repositories
             await _context.AddAsync(workoutSet);
         }
 
-        public void UpdateSet(WorkoutSet workoutSet)
-        {
-            _context.WorkoutSets.Update(workoutSet);
-        }
-
         public void RemoveSet(WorkoutSet workoutSet)
         {
             _context.Remove(workoutSet);

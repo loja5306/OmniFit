@@ -61,8 +61,6 @@ namespace OmniFit.Application.Services
             exercise.Name = request.Name;
             exercise.Description = request.Description;
 
-            _exerciseRepository.Update(exercise);
-
             await _exerciseRepository.SaveChangesAsync();
 
             return exercise.MapToResponse();

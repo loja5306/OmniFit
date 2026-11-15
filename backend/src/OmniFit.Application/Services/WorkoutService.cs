@@ -158,7 +158,6 @@ namespace OmniFit.Application.Services
             workoutSet.Weight = request.Weight;
 
             TouchWorkout(workout);
-            _workoutRepository.UpdateSet(workoutSet);
             await _workoutRepository.SaveChangesAsync();
 
             return workoutSet.MapToResponse();

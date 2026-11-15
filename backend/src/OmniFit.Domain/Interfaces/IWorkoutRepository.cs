@@ -12,7 +12,6 @@ namespace OmniFit.Domain.Interfaces
         Task AddExerciseAsync(WorkoutExercise workoutExercise);
         void RemoveExercise(WorkoutExercise workoutExercise);
         Task AddSetAsync(WorkoutSet workoutSet);
-        void UpdateSet(WorkoutSet workoutSet);
         void RemoveSet(WorkoutSet workoutSet);
         Task SaveChangesAsync();
     }

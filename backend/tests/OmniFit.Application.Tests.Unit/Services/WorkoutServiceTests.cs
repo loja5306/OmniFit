@@ -572,12 +572,6 @@ namespace OmniFit.Application.Tests.Unit.Services
             result.Reps.Should().Be(request.Reps);
             result.Weight.Should().Be(request.Weight);
             result.WorkoutExerciseId.Should().Be(workoutExercise.Id);
-            _workoutRepository.Received(1).UpdateSet(Arg.Is<WorkoutSet>(ws => 
-                ws.Id == workoutSet.Id &&
-                ws.SetNumber == workoutSet.SetNumber &&
-                ws.Reps == workoutSet.Reps &&
-                ws.Weight == workoutSet.Weight
-            ));
             await _workoutRepository.Received(1).SaveChangesAsync();
         }
 
@@ -601,7 +595,6 @@ namespace OmniFit.Application.Tests.Unit.Services
 
             //Assert
             result.Should().BeNull();
-            _workoutRepository.DidNotReceive().UpdateSet(Arg.Any<WorkoutSet>());
             await _workoutRepository.DidNotReceive().SaveChangesAsync();
         }
 
@@ -625,7 +618,6 @@ namespace OmniFit.Application.Tests.Unit.Services
 
             //Assert
             result.Should().BeNull();
-            _workoutRepository.DidNotReceive().UpdateSet(Arg.Any<WorkoutSet>());
             await _workoutRepository.DidNotReceive().SaveChangesAsync();
         }
 
@@ -649,7 +641,6 @@ namespace OmniFit.Application.Tests.Unit.Services
 
             //Assert
             result.Should().BeNull();
-            _workoutRepository.DidNotReceive().UpdateSet(Arg.Any<WorkoutSet>());
             await _workoutRepository.DidNotReceive().SaveChangesAsync();
         }
 
@@ -674,7 +665,6 @@ namespace OmniFit.Application.Tests.Unit.Services
             //Assert
             await act.Should().ThrowAsync<BusinessRuleException>()
                 .WithMessage("Cannot modify a completed workout");
-            _workoutRepository.DidNotReceive().UpdateSet(Arg.Any<WorkoutSet>());
             await _workoutRepository.DidNotReceive().SaveChangesAsync();
         }
 
