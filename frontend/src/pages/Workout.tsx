@@ -24,7 +24,8 @@ const Workout = () => {
   } = useGetWorkoutById(workoutId!);
   const addWorkoutExercise = useAddWorkoutExercise(workoutId!);
   const completeWorkout = useCompleteWorkout(workoutId!);
-  const isReadOnly = workout?.status === "Completed";
+  const isReadOnly =
+    workout?.status === "Completed" || completeWorkout.isPending;
 
   const handleSelectExercise = async (exercise: Exercise) => {
     try {
