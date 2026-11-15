@@ -45,6 +45,11 @@ const Workout = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    addWorkoutExercise.reset();
+  };
+
   if (isPending) {
     return (
       <div className="max-w-lg mx-auto bg-white mt-6 p-4 rounded-lg shadow-md">
@@ -102,7 +107,12 @@ const Workout = () => {
       )}
       <SelectExerciseModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        errorMessages={
+          addWorkoutExercise.isError
+            ? [addWorkoutExercise.error.message]
+            : undefined
+        }
+        onClose={handleCloseModal}
         onSelectExercise={(exercise: Exercise) =>
           handleSelectExercise(exercise)
         }
