@@ -8,12 +8,14 @@ interface Props {
   workoutId: string;
   workoutExercise: WorkoutExerciseResponse;
   isReadOnly: boolean;
+  onSavedChange: (workoutSetId: string, isSaved: boolean) => void;
 }
 
 const WorkoutExerciseCard = ({
   workoutId,
   workoutExercise,
   isReadOnly,
+  onSavedChange,
 }: Props) => {
   const removeWorkoutExercise = useRemoveWorkoutExercise(workoutId);
   const addWorkoutSet = useAddWorkoutSet(workoutId);
@@ -73,6 +75,7 @@ const WorkoutExerciseCard = ({
               displaySetNumber={i + 1}
               showDeleteButton={workoutExercise.workoutSets.length > 1}
               isReadOnly={isReadOnly}
+              onSavedChange={onSavedChange}
             />
           );
         })}

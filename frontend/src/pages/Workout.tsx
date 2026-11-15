@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router";
 import { useGetWorkoutById } from "../hooks/useGetWorkoutById";
 import WorkoutExerciseCard from "../components/workouts/WorkoutExerciseCard";
 import SelectExerciseModal from "../components/exercises/SelectExerciseModal";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useAddWorkoutExercise } from "../hooks/useAddWorkoutExercise";
 import type { Exercise } from "../types/exerciseTypes";
 import { useCompleteWorkout } from "../hooks/useCompleteWorkout";
@@ -11,6 +11,7 @@ import { ApiError } from "../utils/apiClient";
 
 const Workout = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [unsavedSets, setUnsavedSets] = useState<Set<string>>(new Set());
   const { workoutId } = useParams();
   const navigate = useNavigate();
 
@@ -49,6 +50,19 @@ const Workout = () => {
     setIsModalOpen(false);
     addWorkoutExercise.reset();
   };
+
+  const handleSavedChange = useCallback(
+    (workoutSetId: string, isSaved: boolean) => {
+      setUnsavedSets((current) => {
+        if (current.has(workoutSetId) === !isSaved) return current;
+        const next = new Set(current);
+        if (isSaved) next.delete(workoutSetId);
+        else next.add(workoutSetId);
+        return next;
+      });
+    },
+    [],
+  );
 
   if (isPending) {
     return (
@@ -94,13 +108,14 @@ const Workout = () => {
           workoutId={workout.id}
           workoutExercise={workoutExercise}
           isReadOnly={isReadOnly}
+          onSavedChange={handleSavedChange}
         />
       ))}
       {!isReadOnly && (
         <button
           onClick={handleCompleteWorkout}
-          disabled={completeWorkout.isPending}
-          className="bg-green-500 text-white font-semibold py-1 px-2 mt-4 mx-auto flex items-center rounded-md cursor-pointer"
+          disabled={completeWorkout.isPending || unsavedSets.size > 0}
+          className="bg-green-500 text-white font-semibold py-1 px-2 mt-4 mx-auto flex items-center rounded-md cursor-pointer disabled:opacity-20"
         >
           Complete Workout
         </button>
