@@ -13,6 +13,11 @@ interface Props {
   isReadOnly: boolean;
 }
 
+interface Draft {
+  reps?: number | null;
+  weight?: number | null;
+}
+
 const WorkoutSetRow = ({
   workoutId,
   workoutExerciseId,
@@ -21,27 +26,39 @@ const WorkoutSetRow = ({
   showDeleteButton,
   isReadOnly,
 }: Props) => {
-  const [updatedSet, setUpdatedSet] = useState<WorkoutSetResponse>(workoutSet);
+  const [draft, setDraft] = useState<Draft>({});
+
+  const reps = draft.reps !== undefined ? draft.reps : workoutSet.reps;
+  const weight = draft.weight !== undefined ? draft.weight : workoutSet.weight;
 
   const updateWorkoutSet = useUpdateWorkoutSet(workoutId);
   const removeWorkoutSet = useRemoveWorkoutSet(workoutId);
 
-  const repsInvalid =
-    updatedSet.reps !== null &&
-    (updatedSet.reps < 0 || !Number.isInteger(updatedSet.reps));
-  const weightInvalid = updatedSet.weight !== null && updatedSet.weight < 0;
+  const repsInvalid = reps !== null && (reps < 0 || !Number.isInteger(reps));
+  const weightInvalid = weight !== null && weight < 0;
 
   const handleUpdateWorkoutSet = async () => {
     try {
       if (repsInvalid || weightInvalid) return;
+      if (draft.reps === undefined && draft.weight === undefined) return;
+
       await updateWorkoutSet.mutateAsync({
         workoutExerciseId: workoutExerciseId,
-        workoutSetId: updatedSet.id,
+        workoutSetId: workoutSet.id,
         request: {
-          setNumber: updatedSet.setNumber,
-          reps: updatedSet.reps,
-          weight: updatedSet.weight,
+          setNumber: workoutSet.setNumber,
+          reps: reps,
+          weight: weight,
         },
+      });
+
+      setDraft((current) => {
+        const next = { ...current };
+        if (draft.reps !== undefined && current.reps === draft.reps)
+          delete next.reps;
+        if (draft.weight !== undefined && current.weight === draft.weight)
+          delete next.weight;
+        return next;
       });
     } catch (error) {
       console.error(error);
@@ -74,14 +91,14 @@ const WorkoutSetRow = ({
             min={0}
             step={1}
             disabled={isReadOnly}
-            value={updatedSet.reps ?? ""}
+            value={reps ?? ""}
             onChange={(e) =>
-              setUpdatedSet({
-                ...updatedSet,
+              setDraft((d) => ({
+                ...d,
                 reps: Number.isNaN(e.target.valueAsNumber)
                   ? null
                   : e.target.valueAsNumber,
-              })
+              }))
             }
             onBlur={handleUpdateWorkoutSet}
           />
@@ -94,14 +111,14 @@ const WorkoutSetRow = ({
             type="number"
             min={0}
             disabled={isReadOnly}
-            value={updatedSet.weight ?? ""}
+            value={weight ?? ""}
             onChange={(e) =>
-              setUpdatedSet({
-                ...updatedSet,
+              setDraft((d) => ({
+                ...d,
                 weight: Number.isNaN(e.target.valueAsNumber)
                   ? null
                   : e.target.valueAsNumber,
-              })
+              }))
             }
             onBlur={handleUpdateWorkoutSet}
           />
