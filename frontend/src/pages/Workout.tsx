@@ -73,7 +73,7 @@ const Workout = () => {
     );
   }
 
-  if (isError) {
+  if (isError && !workout) {
     return (
       <div className="max-w-lg mx-auto bg-white mt-6 p-4 rounded-lg shadow-md">
         <ErrorBox errorMessages={[error.message]} onRetry={() => refetch()} />
@@ -94,6 +94,9 @@ const Workout = () => {
           </button>
         )}
       </div>
+      {isError && (
+        <ErrorBox errorMessages={[error.message]} onRetry={() => refetch()} />
+      )}
       {completeWorkout.isError && (
         <ErrorBox
           errorMessages={
