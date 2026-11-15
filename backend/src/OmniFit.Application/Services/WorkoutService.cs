@@ -18,12 +18,18 @@ namespace OmniFit.Application.Services
             _workoutRepository = workoutRepository;
         }
 
-        private void ThrowIfWorkoutCompleted(Workout workout) 
+        private static void ThrowIfWorkoutCompleted(Workout workout) 
         {
             if (workout.Status == WorkoutStatus.Completed)
             {
                 throw new BusinessRuleException("Status", "Cannot modify a completed workout");
             }
+        }
+
+        // This marks the workout entity as modified so the workout concurrency token is checked
+        private static void TouchWorkout(Workout workout)
+        {
+            workout.UpdatedOn = DateTimeOffset.UtcNow;
         }
 
         public async Task<Guid> CreateWorkoutAsync(WorkoutRequest request, string userId)
@@ -88,6 +94,7 @@ namespace OmniFit.Application.Services
                 ExerciseId = request.ExerciseId
             };
 
+            TouchWorkout(workout);
             await _workoutRepository.AddExerciseAsync(workoutExercise);
             await _workoutRepository.SaveChangesAsync();
             return workoutExercise.Id;
@@ -103,6 +110,7 @@ namespace OmniFit.Application.Services
             var workoutExercise = workout.WorkoutExercises.FirstOrDefault(we => we.Id == workoutExerciseId);
             if (workoutExercise == null) return false;
 
+            TouchWorkout(workout);
             _workoutRepository.RemoveExercise(workoutExercise);
             await _workoutRepository.SaveChangesAsync();
 
@@ -126,6 +134,7 @@ namespace OmniFit.Application.Services
                 Weight = request.Weight
             };
 
+            TouchWorkout(workout);
             await _workoutRepository.AddSetAsync(workoutSet);
             await _workoutRepository.SaveChangesAsync();
             return workoutSet.Id;
@@ -148,6 +157,7 @@ namespace OmniFit.Application.Services
             workoutSet.Reps = request.Reps;
             workoutSet.Weight = request.Weight;
 
+            TouchWorkout(workout);
             _workoutRepository.UpdateSet(workoutSet);
             await _workoutRepository.SaveChangesAsync();
 
@@ -168,6 +178,7 @@ namespace OmniFit.Application.Services
             var workoutSet = workoutExercise.WorkoutSets.FirstOrDefault(ws => ws.Id == workoutSetId);
             if (workoutSet == null) return false;
 
+            TouchWorkout(workout);
             _workoutRepository.RemoveSet(workoutSet);
             await _workoutRepository.SaveChangesAsync();
 

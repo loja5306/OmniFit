@@ -9,5 +9,6 @@ namespace OmniFit.Domain.Entities
         public WorkoutStatus Status { get; set; } = WorkoutStatus.InProgress;
         public DateTimeOffset? CompletedOn { get; set; }
         public List<WorkoutExercise> WorkoutExercises { get; set; } = new();
+        public uint Version { get; set; }
     }
 }

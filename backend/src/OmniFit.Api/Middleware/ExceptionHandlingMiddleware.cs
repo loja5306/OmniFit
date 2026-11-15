@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OmniFit.Domain.Exceptions;
 using System.Security.Authentication;
 
@@ -45,7 +46,13 @@ namespace OmniFit.Api.Middleware
 
             if (exception is AuthenticationException)
             {
-                await HandleAuthenicationException(httpContext, (AuthenticationException)exception);
+                await HandleAuthenticationException(httpContext, (AuthenticationException)exception);
+                return;
+            }
+
+            if (exception is DbUpdateConcurrencyException)
+            {
+                await HandleConcurrencyException(httpContext, (DbUpdateConcurrencyException)exception);
                 return;
             }
 
@@ -85,7 +92,7 @@ namespace OmniFit.Api.Middleware
             await httpContext.Response.WriteAsJsonAsync(problemDetails);
         }
 
-        private async Task HandleAuthenicationException(HttpContext httpContext, AuthenticationException exception)
+        private async Task HandleAuthenticationException(HttpContext httpContext, AuthenticationException exception)
         {
             _logger.LogWarning("Authentication error for {Method} {Path}", 
                 httpContext.Request.Method, httpContext.Request.Path);
@@ -95,6 +102,22 @@ namespace OmniFit.Api.Middleware
                 Status = StatusCodes.Status401Unauthorized,
                 Title = "Unauthorized",
                 Detail = exception.Message
+            };
+
+            httpContext.Response.StatusCode = problemDetails.Status.Value;
+            await httpContext.Response.WriteAsJsonAsync(problemDetails);
+        }
+
+        private async Task HandleConcurrencyException(HttpContext httpContext, DbUpdateConcurrencyException exception)
+        {
+            _logger.LogWarning("Concurrency error for {Method} {Path}", 
+                httpContext.Request.Method, httpContext.Request.Path);
+
+            var problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status409Conflict,
+                Title = "Conflict",
+                Detail = "This item has recently been changed. Please refresh and try again."
             };
 
             httpContext.Response.StatusCode = problemDetails.Status.Value;
