@@ -45,6 +45,7 @@ const WorkoutExerciseCard = ({
           {!isReadOnly && (
             <button
               className="bg-red-400 size-full rounded-2xl font-bold text-xl cursor-pointer"
+              disabled={removeWorkoutExercise.isPending}
               onClick={handleRemoveWorkoutExercise}
             >
               <X
@@ -75,6 +76,7 @@ const WorkoutExerciseCard = ({
         <div className="w-full flex justify-center pt-4">
           <button
             onClick={handleAddWorkoutSet}
+            disabled={addWorkoutSet.isPending}
             className="bg-blue-400 text-white font-semibold py-1 px-2 flex items-center gap-2 rounded-md cursor-pointer"
           >
             <Plus size={20} strokeWidth={3} />

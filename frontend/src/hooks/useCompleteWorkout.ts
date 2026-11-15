@@ -7,7 +7,7 @@ export function useCompleteWorkout(workoutId: string) {
   return useMutation({
     mutationFn: () => workoutService.complete(workoutId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workouts"] });
+      return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },
   });
 }

@@ -97,6 +97,7 @@ const WorkoutSetRow = ({
           {showDeleteButton && !isReadOnly && (
             <button
               className="bg-red-400 size-full rounded-2xl font-bold text-xl cursor-pointer"
+              disabled={removeWorkoutSet.isPending}
               onClick={handleRemoveWorkoutSet}
             >
               <X

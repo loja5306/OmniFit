@@ -9,7 +9,7 @@ export function useAddWorkoutExercise(workoutId: string) {
     mutationFn: (request: WorkoutExerciseRequest) =>
       workoutService.addExercise(workoutId, request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workouts"] });
+      return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },
   });
 }

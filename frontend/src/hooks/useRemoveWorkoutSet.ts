@@ -13,7 +13,7 @@ export function useRemoveWorkoutSet(workoutId: string) {
       workoutSetId: string;
     }) => workoutService.removeSet(workoutId, workoutExerciseId, workoutSetId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workouts"] });
+      return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },
   });
 }

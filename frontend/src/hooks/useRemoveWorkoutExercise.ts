@@ -8,7 +8,7 @@ export function useRemoveWorkoutExercise(workoutId: string) {
     mutationFn: (workoutExerciseId: string) =>
       workoutService.removeExercise(workoutId, workoutExerciseId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workouts"] });
+      return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },
   });
 }

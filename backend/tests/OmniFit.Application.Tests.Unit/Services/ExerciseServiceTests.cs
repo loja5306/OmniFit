@@ -53,10 +53,9 @@ namespace OmniFit.Application.Tests.Unit.Services
 
             //Assert
             result.Should().Be(true);
+            exercise.IsDeleted.Should().BeTrue();
             
-            _exerciseRepository.Received(1).Delete(exercise);
             await _exerciseRepository.Received(1).SaveChangesAsync();
-
         }
 
         [Fact]
@@ -72,7 +71,6 @@ namespace OmniFit.Application.Tests.Unit.Services
             //Assert
             result.Should().Be(false);
 
-            _exerciseRepository.DidNotReceive().Delete(Arg.Any<Exercise>());
             await _exerciseRepository.DidNotReceive().SaveChangesAsync();
         }
 

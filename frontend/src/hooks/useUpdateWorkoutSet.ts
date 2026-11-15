@@ -22,7 +22,7 @@ export function useUpdateWorkoutSet(workoutId: string) {
         request,
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workouts"] });
+      return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },
   });
 }

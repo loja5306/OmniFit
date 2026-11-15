@@ -137,6 +137,31 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         }
 
         [Fact]
+        public async Task GetById_ReturnsAllExercises_AfterExerciseIsDeleted()
+        {
+            //Arrange
+            var workoutRequest = new WorkoutRequest("Monday Workout");
+            var exerciseId = TestData.Exercises.BenchPressExercise.Id;
+            var workoutExerciseRequest = new WorkoutExerciseRequest(exerciseId);
+
+            var workoutResponse = await _adminClient.PostAsJsonAsync("/Workouts", workoutRequest);
+            var workoutId = await workoutResponse.Content.ReadFromJsonAsync<Guid>();
+            await _adminClient.PostAsJsonAsync($"/Workouts/{workoutId}/Exercises", workoutExerciseRequest);
+            var deleteResponse = await _adminClient.DeleteAsync($"/Exercises/{exerciseId}");
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            
+            //Act
+            var getWorkoutResponse = await _adminClient.GetAsync($"/Workouts/{workoutId}");
+            
+            //Assert
+            getWorkoutResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var content = await getWorkoutResponse.Content.ReadFromJsonAsync<WorkoutResponse>();
+            content.Should().NotBeNull();
+            content.WorkoutExercises.Count().Should().Be(1);
+            content.WorkoutExercises.First().ExerciseId.Should().Be(exerciseId);
+        }
+
+        [Fact]
         public async Task GetForUser_ReturnsOnlyUsersWorkouts_WhenUserIsNotAnAdmin()
         {
             //Arrange

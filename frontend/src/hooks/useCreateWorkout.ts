@@ -8,7 +8,7 @@ export function useCreateWorkout() {
   return useMutation({
     mutationFn: (request: WorkoutRequest) => workoutService.create(request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workouts"] });
+      return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },
   });
 }

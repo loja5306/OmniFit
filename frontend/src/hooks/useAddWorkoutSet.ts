@@ -14,7 +14,7 @@ export function useAddWorkoutSet(workoutId: string) {
       request: WorkoutSetRequest;
     }) => workoutService.addSet(workoutId, workoutExerciseId, request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workouts"] });
+      return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },
   });
 }

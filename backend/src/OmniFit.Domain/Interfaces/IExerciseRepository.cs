@@ -9,7 +9,6 @@ namespace OmniFit.Domain.Interfaces
         Task<Exercise?> GetByIdAsync(Guid id);
         Task<PagedResult<Exercise>> GetAllAsync(int page, int pageSize);
         void Update(Exercise exercise);
-        void Delete(Exercise exercise);
         Task SaveChangesAsync();
     }
 }

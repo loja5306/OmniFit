@@ -28,10 +28,9 @@ namespace OmniFit.Application.Services
         public async Task<bool> DeleteByIdAsync(Guid id)
         {
             var exercise = await _exerciseRepository.GetByIdAsync(id);
-
             if (exercise == null) return false;
 
-            _exerciseRepository.Delete(exercise);
+            exercise.IsDeleted = true;
             await _exerciseRepository.SaveChangesAsync();
 
             return true;
