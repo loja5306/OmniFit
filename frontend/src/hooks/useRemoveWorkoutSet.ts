@@ -12,6 +12,7 @@ export function useRemoveWorkoutSet(workoutId: string) {
       workoutExerciseId: string;
       workoutSetId: string;
     }) => workoutService.removeSet(workoutId, workoutExerciseId, workoutSetId),
+    scope: { id: `workout-${workoutId}` },
     onSuccess: () => {
       return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },

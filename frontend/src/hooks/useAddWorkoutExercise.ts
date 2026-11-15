@@ -8,6 +8,7 @@ export function useAddWorkoutExercise(workoutId: string) {
   return useMutation({
     mutationFn: (request: WorkoutExerciseRequest) =>
       workoutService.addExercise(workoutId, request),
+    scope: { id: `workout-${workoutId}` },
     onSuccess: () => {
       return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },

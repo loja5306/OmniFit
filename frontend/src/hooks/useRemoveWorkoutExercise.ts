@@ -7,6 +7,7 @@ export function useRemoveWorkoutExercise(workoutId: string) {
   return useMutation({
     mutationFn: (workoutExerciseId: string) =>
       workoutService.removeExercise(workoutId, workoutExerciseId),
+    scope: { id: `workout-${workoutId}` },
     onSuccess: () => {
       return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },

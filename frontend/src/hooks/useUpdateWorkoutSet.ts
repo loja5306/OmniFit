@@ -21,6 +21,7 @@ export function useUpdateWorkoutSet(workoutId: string) {
         workoutSetId,
         request,
       ),
+    scope: { id: `workout-${workoutId}` },
     onSuccess: () => {
       return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },

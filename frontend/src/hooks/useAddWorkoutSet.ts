@@ -13,6 +13,7 @@ export function useAddWorkoutSet(workoutId: string) {
       workoutExerciseId: string;
       request: WorkoutSetRequest;
     }) => workoutService.addSet(workoutId, workoutExerciseId, request),
+    scope: { id: `workout-${workoutId}` },
     onSuccess: () => {
       return queryClient.invalidateQueries({ queryKey: ["workouts"] });
     },
