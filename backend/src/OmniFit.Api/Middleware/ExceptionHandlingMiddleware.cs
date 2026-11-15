@@ -56,8 +56,11 @@ namespace OmniFit.Api.Middleware
                 return;
             }
 
+            var method = SanitizeForLog(httpContext.Request.Method);
+            var path = SanitizeForLog(httpContext.Request.Path.Value);
+
             _logger.LogError(exception, "Unhandled exception for {Method} {Path}", 
-                httpContext.Request.Method, httpContext.Request.Path);
+                method, path);
                 
             var problemDetails = new ProblemDetails
             {
@@ -73,8 +76,11 @@ namespace OmniFit.Api.Middleware
 
         private async Task HandleValidationException(HttpContext httpContext, ValidationException exception)
         {
+            var method = SanitizeForLog(httpContext.Request.Method);
+            var path = SanitizeForLog(httpContext.Request.Path.Value);
+
             _logger.LogWarning("Validation error for {Method} {Path}", 
-                httpContext.Request.Method, httpContext.Request.Path);
+                method, path);
 
             var problemDetails = new ValidationProblemDetails
             {
@@ -94,8 +100,11 @@ namespace OmniFit.Api.Middleware
 
         private async Task HandleAuthenticationException(HttpContext httpContext, AuthenticationException exception)
         {
+            var method = SanitizeForLog(httpContext.Request.Method);
+            var path = SanitizeForLog(httpContext.Request.Path.Value);
+
             _logger.LogWarning("Authentication error for {Method} {Path}", 
-                httpContext.Request.Method, httpContext.Request.Path);
+                method, path);
 
             var problemDetails = new ProblemDetails
             {
@@ -110,8 +119,11 @@ namespace OmniFit.Api.Middleware
 
         private async Task HandleConcurrencyException(HttpContext httpContext, DbUpdateConcurrencyException exception)
         {
+            var method = SanitizeForLog(httpContext.Request.Method);
+            var path = SanitizeForLog(httpContext.Request.Path.Value);
+
             _logger.LogWarning("Concurrency error for {Method} {Path}", 
-                httpContext.Request.Method, httpContext.Request.Path);
+                method, path);
 
             var problemDetails = new ProblemDetails
             {
@@ -122,6 +134,13 @@ namespace OmniFit.Api.Middleware
 
             httpContext.Response.StatusCode = problemDetails.Status.Value;
             await httpContext.Response.WriteAsJsonAsync(problemDetails);
+        }
+
+        private static string SanitizeForLog(string? value)
+        {
+            return (value ?? string.Empty)
+                .Replace("\r", string.Empty)
+                .Replace("\n", string.Empty);
         }
     }
 }
