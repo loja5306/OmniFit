@@ -9,7 +9,7 @@ export function useCreateExercise() {
     mutationFn: (request: CreateExerciseRequest) =>
       exerciseService.create(request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["exercises"] });
+      return queryClient.invalidateQueries({ queryKey: ["exercises"] });
     },
   });
 }

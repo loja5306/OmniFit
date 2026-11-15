@@ -21,6 +21,7 @@ namespace OmniFit.Infrastructure.Data
             modelBuilder.Entity<Workout>(e =>
             {
                 e.HasKey(w => w.Id);
+                e.Property(w => w.Version).IsRowVersion();
                 e.HasOne<IdentityUser>()
                     .WithMany()
                     .HasForeignKey(w => w.UserId);

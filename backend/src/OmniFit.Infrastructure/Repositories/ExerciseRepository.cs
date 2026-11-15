@@ -25,6 +25,7 @@ namespace OmniFit.Infrastructure.Repositories
         public async Task<PagedResult<Exercise>> GetAllAsync(int page, int pageSize)
         {
             var query = _context.Exercises
+                .Where(e => !e.IsDeleted)
                 .OrderByDescending(e => e.CreatedOn);
             
             var count = await query.CountAsync();
@@ -39,17 +40,8 @@ namespace OmniFit.Infrastructure.Repositories
         public async Task<Exercise?> GetByIdAsync(Guid id)
         {
             return await _context.Exercises
+                .Where(e => !e.IsDeleted)
                 .FirstOrDefaultAsync(e => e.Id == id);
-        }
-        
-        public void Update(Exercise exercise)
-        {
-            _context.Exercises.Update(exercise);
-        }
-
-        public void Delete(Exercise exercise)
-        {
-            _context.Remove(exercise);
         }
 
         public async Task SaveChangesAsync()

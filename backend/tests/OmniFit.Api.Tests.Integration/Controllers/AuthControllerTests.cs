@@ -12,12 +12,14 @@ namespace OmniFit.Api.Tests.Integration.Controllers
     public class AuthControllerTests : IClassFixture<ApiFactory>, IAsyncLifetime
     {
         private readonly ApiFactory _factory;
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _adminClient;
+        private readonly HttpClient _userClient;
 
         public AuthControllerTests(ApiFactory factory)
         {
             _factory = factory;
-            _httpClient = factory.HttpClient;
+            _adminClient = factory.CreateClientForUser(TestData.Users.AdminUser.Id, ["Admin"]);
+            _userClient = factory.CreateClientForUser(TestData.Users.StandardUser.Id, []);
         }
 
         [Fact]
@@ -27,7 +29,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var request = new RegisterRequest("lukeatkinson@gmail.com", "Password123!");
 
             //Act
-            var response = await _httpClient.PostAsJsonAsync("Auth/Register", request);
+            var response = await _adminClient.PostAsJsonAsync("Auth/Register", request);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -49,7 +51,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var request = new RegisterRequest("lukeatkinson@gmail.com", "Pass1");
 
             //Act
-            var response = await _httpClient.PostAsJsonAsync("Auth/Register", request);
+            var response = await _adminClient.PostAsJsonAsync("Auth/Register", request);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -66,10 +68,10 @@ namespace OmniFit.Api.Tests.Integration.Controllers
         {
             //Arrange
             var request = new RegisterRequest("lukeatkinson@gmail.com", "Password123!");
-            await _httpClient.PostAsJsonAsync("Auth/Register", request);
+            await _adminClient.PostAsJsonAsync("Auth/Register", request);
 
             //Act
-            var response = await _httpClient.PostAsJsonAsync("Auth/Login", request);
+            var response = await _adminClient.PostAsJsonAsync("Auth/Login", request);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -91,7 +93,7 @@ namespace OmniFit.Api.Tests.Integration.Controllers
             var request = new RegisterRequest("lukeatkinson@gmail.com", "Password123!");
 
             //Act
-            var response = await _httpClient.PostAsJsonAsync("Auth/Login", request);
+            var response = await _adminClient.PostAsJsonAsync("Auth/Login", request);
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

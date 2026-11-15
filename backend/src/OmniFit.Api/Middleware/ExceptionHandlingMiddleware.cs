@@ -1,5 +1,8 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OmniFit.Domain.Exceptions;
 using System.Security.Authentication;
 
 namespace OmniFit.Api.Middleware
@@ -35,14 +38,29 @@ namespace OmniFit.Api.Middleware
                 return;
             }
 
-            if (exception is AuthenticationException)
+            if (exception is BusinessRuleException)
             {
-                await HandleAuthenicationException(httpContext, (AuthenticationException)exception);
+                await HandleValidationException(httpContext, new ValidationException([new ValidationFailure(((BusinessRuleException)exception).PropertyName, exception.Message)]));
                 return;
             }
 
+            if (exception is AuthenticationException)
+            {
+                await HandleAuthenticationException(httpContext, (AuthenticationException)exception);
+                return;
+            }
+
+            if (exception is DbUpdateConcurrencyException)
+            {
+                await HandleConcurrencyException(httpContext, (DbUpdateConcurrencyException)exception);
+                return;
+            }
+
+            var method = SanitizeForLog(httpContext.Request.Method);
+            var path = SanitizeForLog(httpContext.Request.Path.Value);
+
             _logger.LogError(exception, "Unhandled exception for {Method} {Path}", 
-                httpContext.Request.Method, httpContext.Request.Path);
+                method, path);
                 
             var problemDetails = new ProblemDetails
             {
@@ -58,8 +76,11 @@ namespace OmniFit.Api.Middleware
 
         private async Task HandleValidationException(HttpContext httpContext, ValidationException exception)
         {
+            var method = SanitizeForLog(httpContext.Request.Method);
+            var path = SanitizeForLog(httpContext.Request.Path.Value);
+
             _logger.LogWarning("Validation error for {Method} {Path}", 
-                httpContext.Request.Method, httpContext.Request.Path);
+                method, path);
 
             var problemDetails = new ValidationProblemDetails
             {
@@ -77,10 +98,13 @@ namespace OmniFit.Api.Middleware
             await httpContext.Response.WriteAsJsonAsync(problemDetails);
         }
 
-        private async Task HandleAuthenicationException(HttpContext httpContext, AuthenticationException exception)
+        private async Task HandleAuthenticationException(HttpContext httpContext, AuthenticationException exception)
         {
+            var method = SanitizeForLog(httpContext.Request.Method);
+            var path = SanitizeForLog(httpContext.Request.Path.Value);
+
             _logger.LogWarning("Authentication error for {Method} {Path}", 
-                httpContext.Request.Method, httpContext.Request.Path);
+                method, path);
 
             var problemDetails = new ProblemDetails
             {
@@ -91,6 +115,32 @@ namespace OmniFit.Api.Middleware
 
             httpContext.Response.StatusCode = problemDetails.Status.Value;
             await httpContext.Response.WriteAsJsonAsync(problemDetails);
+        }
+
+        private async Task HandleConcurrencyException(HttpContext httpContext, DbUpdateConcurrencyException exception)
+        {
+            var method = SanitizeForLog(httpContext.Request.Method);
+            var path = SanitizeForLog(httpContext.Request.Path.Value);
+
+            _logger.LogWarning("Concurrency error for {Method} {Path}", 
+                method, path);
+
+            var problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status409Conflict,
+                Title = "Conflict",
+                Detail = "This item has recently been changed. Please refresh and try again."
+            };
+
+            httpContext.Response.StatusCode = problemDetails.Status.Value;
+            await httpContext.Response.WriteAsJsonAsync(problemDetails);
+        }
+
+        private static string SanitizeForLog(string? value)
+        {
+            return (value ?? string.Empty)
+                .Replace("\r", string.Empty)
+                .Replace("\n", string.Empty);
         }
     }
 }

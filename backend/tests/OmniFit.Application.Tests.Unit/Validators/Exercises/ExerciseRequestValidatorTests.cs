@@ -6,13 +6,13 @@ namespace OmniFit.Application.Tests.Unit.Validators
 {
     public class CreateExerciseRequestValidatorTests
     {
-        private readonly CreateExerciseRequestValidator _sut = new();
+        private readonly ExerciseRequestValidator _sut = new();
 
         [Fact]
         public void CreateExerciseRequestValidator_ShouldThrowError_WhenNameIsEmpty()
         {
             //Arrange
-            var request = new CreateExerciseRequest("", "Custom Exercise");
+            var request = new ExerciseRequest("", "Custom Exercise");
 
             //Act
             var result = _sut.TestValidate(request);
@@ -26,7 +26,7 @@ namespace OmniFit.Application.Tests.Unit.Validators
         public void CreateExerciseRequestValidator_ShouldThrowError_WhenNameIsOver100Characters()
         {
             //Arrange
-            var request = new CreateExerciseRequest(new string('A', 101), "Custom Exercise");
+            var request = new ExerciseRequest(new string('A', 101), "Custom Exercise");
 
             //Act
             var result = _sut.TestValidate(request);
@@ -40,7 +40,7 @@ namespace OmniFit.Application.Tests.Unit.Validators
         public void CreateExerciseRequestValidator_ShouldThrowError_WhenDescriptionIsOver500Characters()
         {
             //Arrange
-            var request = new CreateExerciseRequest("Bench Press", new string('A', 501));
+            var request = new ExerciseRequest("Bench Press", new string('A', 501));
 
             //Act
             var result = _sut.TestValidate(request);

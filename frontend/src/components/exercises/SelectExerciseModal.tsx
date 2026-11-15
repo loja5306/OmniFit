@@ -4,14 +4,21 @@ import type { Exercise } from "../../types/exerciseTypes";
 import Modal from "../common/Modal";
 import ExerciseSelectItem from "./ExerciseSelectItem";
 import PaginationControl from "../common/PaginationControl";
+import ErrorBox from "../common/ErrorBox";
 
 interface Props {
   isOpen: boolean;
+  errorMessages?: string[];
   onClose: () => void;
   onSelectExercise: (exercise: Exercise) => void;
 }
 
-const SelectExerciseModal = ({ isOpen, onClose, onSelectExercise }: Props) => {
+const SelectExerciseModal = ({
+  isOpen,
+  errorMessages,
+  onClose,
+  onSelectExercise,
+}: Props) => {
   const [page, setPage] = useState<number>(1);
   const { isPending, data } = useGetAllExercises({ page: page, pageSize: 5 });
 
@@ -22,6 +29,7 @@ const SelectExerciseModal = ({ isOpen, onClose, onSelectExercise }: Props) => {
           <div>Pending...</div>
         ) : (
           <div className="space-y-2">
+            {errorMessages && <ErrorBox errorMessages={errorMessages} />}
             {data.items.map((exercise: Exercise) => (
               <ExerciseSelectItem
                 key={exercise.id}

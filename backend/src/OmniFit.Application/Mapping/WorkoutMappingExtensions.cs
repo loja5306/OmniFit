@@ -1,46 +1,74 @@
 ﻿using OmniFit.Application.DTOs.Workouts;
 using OmniFit.Domain.Common;
 using OmniFit.Domain.Entities;
+using OmniFit.Domain.Enums;
 
 namespace OmniFit.Application.Mapping
 {
     public static class WorkoutMappingExtensions
     {
-        public static Workout MapToEntity(this CreateWorkoutRequest request, string userId)
+        public static Workout MapToEntity(this WorkoutRequest request, string userId)
         {
             return new Workout
             {
                 Name = request.Name,
                 UserId = userId,
-                WorkoutExercises = request.Exercises?.Select(e => new WorkoutExercise
-                {
-                    ExerciseId = e.ExerciseId,
-                    WorkoutSets = e.Sets?.Select(s => new WorkoutSet
-                    {
-                        SetNumber = s.SetNumber,
-                        Reps = s.Reps,
-                        Weight = s.Weight
-                    }).ToList() ?? new()
-                }).ToList() ?? new()
+                Status = WorkoutStatus.InProgress
             };
+        }
+
+        public static WorkoutSummaryResponse MapToSummary(this Workout workout)
+        {
+            return new WorkoutSummaryResponse(
+                workout.Id, 
+                workout.Name,
+                workout.Status,
+                workout.CompletedOn,
+                workout.WorkoutExercises.Count);
         }
 
         public static WorkoutResponse MapToResponse(this Workout workout)
         {
             return new WorkoutResponse(
                 workout.Id, 
-                workout.Name, 
-                workout.WorkoutExercises.Count());
+                workout.Name,
+                workout.Status,
+                workout.CompletedOn,
+                workout.WorkoutExercises.Select(we => we.MapToResponse()).ToList());
         }
 
-        public static PagedResult<WorkoutResponse> MapToResponse(
+        public static PagedResult<WorkoutSummaryResponse> MapToSummary(
             this PagedResult<Workout> workouts)
         {
-            return new PagedResult<WorkoutResponse>(
-                workouts.Items.Select(w => w.MapToResponse()),
+            return new PagedResult<WorkoutSummaryResponse>(
+                workouts.Items.Select(w => w.MapToSummary()).ToList(),
                 workouts.Page,
                 workouts.PageSize,
                 workouts.TotalCount
+            );
+        }
+
+        public static WorkoutExerciseResponse MapToResponse(this WorkoutExercise workoutExercise)
+        {
+            return new WorkoutExerciseResponse(
+                workoutExercise.Id,
+                workoutExercise.ExerciseId,
+                workoutExercise.Exercise.Name,
+                workoutExercise.WorkoutSets
+                    .OrderBy(ws => ws.SetNumber)
+                    .Select(ws => ws.MapToResponse())
+                    .ToList()
+            );
+        }
+
+        public static WorkoutSetResponse MapToResponse(this WorkoutSet workoutSet)
+        {
+            return new WorkoutSetResponse(
+                workoutSet.Id, 
+                workoutSet.WorkoutExerciseId, 
+                workoutSet.SetNumber, 
+                workoutSet.Reps, 
+                workoutSet.Weight
             );
         }
     }

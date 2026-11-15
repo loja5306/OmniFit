@@ -5,10 +5,10 @@ namespace OmniFit.Application.Interfaces
 {
     public interface IExerciseService
     {
-        Task<Guid> CreateAsync(CreateExerciseRequest request);
+        Task<Guid> CreateAsync(ExerciseRequest request);
         Task<PagedResult<ExerciseResponse>> GetAllAsync(ExerciseQueryParameters request);
         Task<ExerciseResponse?> GetByIdAsync(Guid id);
-        Task<ExerciseResponse?> UpdateAsync(Guid id, UpdateExerciseRequest request);
+        Task<ExerciseResponse?> UpdateAsync(Guid id, ExerciseRequest request);
         Task<bool> DeleteByIdAsync(Guid id);
     }
 }

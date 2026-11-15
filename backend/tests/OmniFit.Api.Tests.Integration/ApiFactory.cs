@@ -34,8 +34,6 @@ namespace OmniFit.Api.Tests.Integration
                 .Build();
         }
 
-        public HttpClient HttpClient { get; private set; } = default!;
-
         public async Task ResetDatabaseAsync()
         {
             await _respawner.ResetAsync(_dbConnection);
@@ -45,9 +43,18 @@ namespace OmniFit.Api.Tests.Integration
         {
             await _dbContainer.StartAsync();
             _dbConnection = new NpgsqlConnection(_dbContainer.GetConnectionString());
-            HttpClient = CreateClient();
-            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Guid.NewGuid().ToString());
+            // This specifically starts the server so Respawner can initialise
+            _ = Server;
             await InitializeRespawner();
+        }
+
+        public HttpClient CreateClientForUser(string userId, string[] roles)
+        {
+            var client = CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Guid.NewGuid().ToString());
+            client.DefaultRequestHeaders.Add(TestAuthHandler.UserIdHeader, userId);
+            client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, string.Join(',', roles));
+            return client;
         }
 
         private async Task InitializeRespawner()

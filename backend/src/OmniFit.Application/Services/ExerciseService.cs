@@ -15,7 +15,7 @@ namespace OmniFit.Application.Services
             _exerciseRepository = exerciseRepository;
         }
 
-        public async Task<Guid> CreateAsync(CreateExerciseRequest request)
+        public async Task<Guid> CreateAsync(ExerciseRequest request)
         {
             var exercise = request.MapToEntity();
 
@@ -28,10 +28,9 @@ namespace OmniFit.Application.Services
         public async Task<bool> DeleteByIdAsync(Guid id)
         {
             var exercise = await _exerciseRepository.GetByIdAsync(id);
-
             if (exercise == null) return false;
 
-            _exerciseRepository.Delete(exercise);
+            exercise.IsDeleted = true;
             await _exerciseRepository.SaveChangesAsync();
 
             return true;
@@ -53,7 +52,7 @@ namespace OmniFit.Application.Services
             return exercise.MapToResponse();
         }
 
-        public async Task<ExerciseResponse?> UpdateAsync(Guid id, UpdateExerciseRequest request)
+        public async Task<ExerciseResponse?> UpdateAsync(Guid id, ExerciseRequest request)
         {
             var exercise = await _exerciseRepository.GetByIdAsync(id);
 
@@ -61,8 +60,6 @@ namespace OmniFit.Application.Services
 
             exercise.Name = request.Name;
             exercise.Description = request.Description;
-
-            _exerciseRepository.Update(exercise);
 
             await _exerciseRepository.SaveChangesAsync();
 
