@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import type { AuthContextType } from "../types/authTypes";
 import { TOKEN_KEY } from "../utils/constants";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -14,6 +15,7 @@ function parseEmailFromToken(token: string): string | null {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient();
   const [token, setToken] = useState<string | null>(() =>
     localStorage.getItem(TOKEN_KEY),
   );
@@ -22,11 +24,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAuthenticated = token !== null;
 
   const login = (newToken: string) => {
+    queryClient.removeQueries();
     localStorage.setItem(TOKEN_KEY, newToken);
     setToken(newToken);
   };
 
   const logout = () => {
+    queryClient.removeQueries();
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
   };
